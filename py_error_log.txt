@@ -1,0 +1,4 @@
+CogniMentor Error: (Request ID: Root=1-69842064-7296baaf1abfeca915089787;63758773-26b9-411f-816b-7911eea8e378)
+
+Bad request:
+{'message': "The requested model 'HuggingFaceH4/zephyr-7b-beta' is not supported by any provider you have enabled.", 'type': 'invalid_request_error', 'param': 'model', 'code': 'model_not_supported'}

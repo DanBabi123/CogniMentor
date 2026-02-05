@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+{% block title %}AI Content Generator{% endblock %}
+
+{% block content %}
+<div class="dashboard-wrapper animate-fade-up">
+
+    <header style="margin-bottom: 30px;">
+        <h1 style="font-size: 28px; font-weight: 700; color: var(--dark);">AI Content Generator</h1>
+        <p style="color: var(--gray-1);">Create custom study materials on any topic instantly.</p>
+    </header>
+
+    <div class="glass-panel" style="padding: 32px; background: white;">
+        <form method="POST">
+            <div class="form-group">
+                <label style="font-weight: 600; margin-bottom: 8px; display: block;">Topic</label>
+                <input type="text" name="topic" class="form-control"
+                    placeholder="e.g. Quantum Physics, French Revolution, React Hooks" required
+                    value="{{ topic_title }}">
+            </div>
+
+            <div class="form-group">
+                <label style="font-weight: 600; margin-bottom: 8px; display: block;">Learning Mode</label>
+                <select name="mode" class="form-control">
+                    <option value="beginner">Beginner Guide (Simple)</option>
+                    <option value="concept">Deep Dive (Technical)</option>
+                    <option value="analogy">Analogy (Creative)</option>
+                    <option value="visual">Visual/Code (Mental Models)</option>
+                    <option value="mistakes">Common Mistakes</option>
+                </select>
+            </div>
+
+            <button type="submit" class="btn btn-primary">
+                <span class="material-icons">auto_awesome</span> Generate Content
+            </button>
+        </form>
+    </div>
+
+    {% if generated_content %}
+    <div class="glass-panel"
+        style="margin-top: 30px; padding: 40px; background: white; border-left: 4px solid var(--primary);">
+        <h2 style="font-size: 22px; margin-bottom: 20px; display: flex; align-items: center; gap: 10px;">
+            <span class="material-icons" style="color: var(--primary);">library_books</span> Generated Result
+        </h2>
+        <div class="content-body" style="line-height: 1.8; color: var(--dark);">
+            {{ generated_content|safe }}
+        </div>
+    </div>
+    {% endif %}
+
+</div>
+{% endblock %}

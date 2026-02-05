@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}CogniMentor{% endblock %} - Premium AI Learning</title>
+
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+
+    <!-- Design System -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style1.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}"> <!-- Specific overrides -->
+
+    <style>
+        /* Toast Container */
+        #toast-container {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1000;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .toast {
+            background: white;
+            padding: 16px 24px;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            transform: translateX(120%);
+            transition: transform 0.3s ease;
+            font-weight: 500;
+            opacity: 0;
+        }
+
+        .toast.show {
+            transform: translateX(0);
+            opacity: 1;
+        }
+
+        .toast-success {
+            border-left: 4px solid var(--success);
+        }
+
+        .toast-info {
+            border-left: 4px solid var(--primary);
+        }
+
+        .toast-error {
+            border-left: 4px solid var(--secondary);
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Toast Container -->
+    <div id="toast-container"></div>
+
+    <!-- Flash Message Data Bridge -->
+    <div id="flash-messages" style="display:none;">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+        {% for category, message in messages %}
+        <div class="flash-data" data-category="{{ category }}" data-message="{{ message }}"></div>
+        {% endfor %}
+        {% endif %}
+        {% endwith %}
+    </div>
+
+    <!-- App Layout -->
+    <div class="app-container">
+
+        <!-- Sidebar (Auth Only, Not on Landing) -->
+        {% if current_user.is_authenticated and request.endpoint != 'main.index' %}
+        <aside class="sidebar">
+            <div class="nav-brand">
+                <span class="material-icons" style="color: var(--primary);">school</span>
+                <span>CogniMentor</span>
+            </div>
+            <nav style="margin-top: 20px;">
+                <ul style="display: flex; flex-direction: column; gap: 4px; padding: 0;">
+
+                    <!-- === ADMIN MENU === -->
+                    {% if current_user.role == 'admin' %}
+                    <li>
+                        <a href="{{ url_for('main.dashboard') }}"
+                            class="nav-link {% if request.endpoint == 'main.dashboard' %}active{% endif %}">
+                            <span class="material-icons">dashboard</span> Admin Console
+                        </a>
+                    </li>
+                    <li>
+                        <a href="{{ url_for('admin.manage_users') }}" class="nav-link">
+                            <span class="material-icons">people</span> Manage Users
+                        </a>
+                    </li>
+                    <li>
+                        <a href="{{ url_for('admin.content_manager') }}" class="nav-link">
+                            <span class="material-icons">library_books</span> Content Manager
+                        </a>
+                    </li>
+                    <li>
+                        <a href="{{ url_for('admin.analytics') }}" class="nav-link">
+                            <span class="material-icons">analytics</span> Analytics
+                        </a>
+                    </li>
+                    <li>
+                        <a href="{{ url_for('admin.settings') }}" class="nav-link">
+                            <span class="material-icons">settings</span> Settings
+                        </a>
+                    </li>
+
+                    <!-- === STUDENT MENU === -->
+                    {% else %}
+                    <li>
+                        <a href="{{ url_for('main.dashboard') }}"
+                            class="nav-link {% if request.endpoint == 'main.dashboard' %}active{% endif %}">
+                            <span class="material-icons">dashboard</span> Dashboard
+                        </a>
+                    </li>
+                    <li>
+                        <a href="{{ url_for('main.my_subjects') }}"
+                            class="nav-link {% if request.endpoint == 'main.my_subjects' %}active{% endif %}">
+                            <span class="material-icons">import_contacts</span> My Subjects
+                        </a>
+                    </li>
+                    <li>
+                        <a href="{{ url_for('main.content_generator') }}"
+                            class="nav-link {% if request.endpoint == 'main.content_generator' %}active{% endif %}">
+                            <span class="material-icons">auto_stories</span> AI Generator
+                        </a>
+                    </li>
+                    <li>
+                        <a href="{{ url_for('advisor.start') }}"
+                            class="nav-link {% if request.endpoint == 'advisor.start' %}active{% endif %}">
+                            <span class="material-icons">explore</span> AI Advisor
+                        </a>
+                    </li>
+                    <li>
+                        <a href="{{ url_for('main.profile') }}"
+                            class="nav-link {% if request.endpoint == 'main.profile' %}active{% endif %}">
+                            {% if current_user.profile_pic %}
+                            <img src="{{ url_for('static', filename='profile_pics/' + current_user.profile_pic) }}"
+                                alt="" class="nav-profile-pic">
+                            {% else %}
+                            <span class="material-icons" style="margin-right:12px;">account_circle</span>
+                            {% endif %}
+                            Profile
+                        </a>
+                    </li>
+                    <li>
+                        <a href="{{ url_for('main.contact') }}"
+                            class="nav-link {% if request.endpoint == 'main.contact' %}active{% endif %}">
+                            <span class="material-icons">contact_support</span> Contact Us
+                        </a>
+                    </li>
+                    {% endif %}
+
+                    <!-- === COMMON (LOGOUT) === -->
+                    <li style="margin-top: auto; border-top: 1px solid var(--border-color); padding-top: 8px;">
+                        <a href="{{ url_for('auth.logout') }}" class="nav-link" style="color: #ea4335;">
+                            <span class="material-icons">logout</span> Logout
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+        </aside>
+
+        <!-- Mobile Sidebar Overlay -->
+        <div class="sidebar-overlay"></div>
+        {% endif %}
+
+        <!-- Main Content (Full width if not auth OR if on landing page) -->
+        <main class="main-content" {% if not current_user.is_authenticated or request.endpoint=='main.index'
+            %}style="margin-left: 0; padding: 0;" {% endif %}>
+            <!-- Topbar (Mobile) -->
+            {% if current_user.is_authenticated and request.endpoint != 'main.index' %}
+            <div class="mobile-topbar" style="display: none;"> <!-- Visible only on mobile via CSS -->
+                <button class="menu-toggle btn-icon"><span class="material-icons">menu</span></button>
+                <span class="brand">CogniMentor</span>
+            </div>
+            {% endif %}
+
+            {% block content %}{% endblock %}
+        </main>
+    </div>
+
+    <!-- AI Chatbot -->
+    {% if current_user.is_authenticated %}
+    {% include 'chatbot/widget.html' %}
+    {% endif %}
+
+    <!-- Global Scripts -->
+    <script src="{{ url_for('static', filename='js/ui.js') }}"></script>
+    {% block scripts %}{% endblock %}
+</body>
+
+</html>

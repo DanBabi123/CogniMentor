@@ -1,0 +1,122 @@
+{% extends "base.html" %}
+{% block title %}Your Roadmap{% endblock %}
+
+{% block content %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}">
+<div class="dashboard-container">
+    <aside class="sidebar">
+        <a href="{{ url_for('main.index') }}" class="sidebar-link">
+            <span class="material-icons">dashboard</span> Dashboard
+        </a>
+        <a href="{{ url_for('advisor.start') }}" class="sidebar-link">
+            <span class="material-icons">restart_alt</span> Create New Plan
+        </a>
+    </aside>
+
+    <main class="dashboard-content" style="background: white;">
+        <div class="roadmap-header">
+            {{ roadmap.intro|safe }}
+        </div>
+
+        <div class="timeline">
+            {% for week in roadmap.weeks %}
+            <div class="timeline-item">
+                <div class="timeline-marker"></div>
+                <div class="timeline-content">
+                    <h3>{{ week.title }}</h3>
+                    <p>{{ week.desc }}</p>
+                    <ul class="task-list">
+                        {% for task in week.tasks %}
+                        <li><span class="material-icons">check_circle_outline</span> {{ task }}</li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+
+        <div class="roadmap-actions">
+            <h3>Ready to start?</h3>
+            <p>We recommend starting with the foundational module in our library.</p>
+            <a href="{{ url_for('main.index') }}" class="btn btn-lg">Go to Dashboard</a>
+        </div>
+    </main>
+</div>
+
+<style>
+    .roadmap-header {
+        background: #f8f9fa;
+        padding: 30px;
+        border-radius: 12px;
+        margin-bottom: 40px;
+        border-left: 5px solid #1a73e8;
+    }
+
+    .timeline {
+        position: relative;
+        max-width: 800px;
+        margin: 0 auto;
+        padding: 20px 0;
+    }
+
+    .timeline::before {
+        content: '';
+        position: absolute;
+        left: 20px;
+        top: 0;
+        bottom: 0;
+        width: 2px;
+        background: #e0e0e0;
+    }
+
+    .timeline-item {
+        position: relative;
+        margin-bottom: 40px;
+        padding-left: 60px;
+    }
+
+    .timeline-marker {
+        position: absolute;
+        left: 11px;
+        top: 0;
+        width: 20px;
+        height: 20px;
+        background: #fff;
+        border: 4px solid #1a73e8;
+        border-radius: 50%;
+        z-index: 1;
+    }
+
+    .timeline-content h3 {
+        margin-top: 0;
+        color: #1a73e8;
+    }
+
+    .task-list {
+        list-style: none;
+        padding: 0;
+        margin-top: 15px;
+    }
+
+    .task-list li {
+        display: flex;
+        align-items: center;
+        margin-bottom: 10px;
+        font-size: 15px;
+        color: #3c4043;
+    }
+
+    .task-list li .material-icons {
+        margin-right: 10px;
+        color: #34a853;
+        font-size: 20px;
+    }
+
+    .roadmap-actions {
+        text-align: center;
+        margin-top: 60px;
+        padding-top: 40px;
+        border-top: 1px solid #eee;
+    }
+</style>
+{% endblock %}

@@ -1,0 +1,63 @@
+{% extends "base.html" %}
+
+{% block title %}Manage Users{% endblock %}
+
+{% block content %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}">
+
+<div class="dashboard-main">
+    <header class="section-header">
+        <h2 class="page-title">Manage Users</h2>
+        <p class="page-subtitle">View and manage platform users</p>
+    </header>
+
+    <div class="glass-panel" style="overflow-x: auto;">
+        <table style="width: 100%; border-collapse: collapse;">
+            <thead>
+                <tr style="text-align: left; border-bottom: 2px solid var(--border-color);">
+                    <th style="padding: 12px; color: var(--text-secondary);">ID</th>
+                    <th style="padding: 12px; color: var(--text-secondary);">Name</th>
+                    <th style="padding: 12px; color: var(--text-secondary);">Email</th>
+                    <th style="padding: 12px; color: var(--text-secondary);">Role</th>
+                    <th style="padding: 12px; color: var(--text-secondary);">Status</th>
+                    <th style="padding: 12px; color: var(--text-secondary);">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for user in users %}
+                <tr style="border-bottom: 1px solid var(--border-color);">
+                    <td style="padding: 12px;">{{ user.id }}</td>
+                    <td style="padding: 12px; font-weight: 500;">
+                        <div style="display: flex; align-items: center;">
+                            {% if user.profile_pic %}
+                            <img src="{{ url_for('static', filename='profile_pics/'+user.profile_pic) }}"
+                                style="width: 24px; height: 24px; border-radius: 50%; margin-right: 8px;">
+                            {% endif %}
+                            {{ user.name }}
+                        </div>
+                    </td>
+                    <td style="padding: 12px;">{{ user.email }}</td>
+                    <td style="padding: 12px;">
+                        <span
+                            style="padding: 4px 8px; border-radius: 12px; font-size: 12px; 
+                            background: {% if user.role == 'admin' %}#e8f0fe; color: #1967d2{% else %}#f1f3f4; color: #5f6368{% endif %};">
+                            {{ user.role }}
+                        </span>
+                    </td>
+                    <td style="padding: 12px;">
+                        {% if user.is_verified %}
+                        <span style="color: var(--success); font-size: 14px;">● Verified</span>
+                        {% else %}
+                        <span style="color: var(--warning); font-size: 14px;">● Pending</span>
+                        {% endif %}
+                    </td>
+                    <td style="padding: 12px;">
+                        <button class="btn-icon" style="color: var(--primary);">edit</button>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

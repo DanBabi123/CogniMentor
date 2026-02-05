@@ -1,0 +1,180 @@
+<!-- Chatbot Widget -->
+<div id="chatbot-widget" class="chat-widget collapsed">
+    <div class="chat-header" onclick="toggleChat()">
+        <div class="chat-title">
+            <span class="material-icons">smart_toy</span> CogniMentor AI
+        </div>
+        <span class="material-icons toggle-icon">expand_less</span>
+    </div>
+
+    <div class="chat-body">
+        <div id="chat-messages" class="chat-messages">
+            <div class="message bot">
+                <p>Hi {{ current_user.name }}! I'm your AI mentor. Need help with {{ topic.title if topic else 'your
+                    studies' }}?</p>
+            </div>
+        </div>
+        <div class="chat-input-area">
+            <input type="text" id="user-input" placeholder="Ask me anything..." onkeypress="handleEnter(event)">
+            <button onclick="sendMessage()"><span class="material-icons">send</span></button>
+        </div>
+    </div>
+</div>
+
+<style>
+    .chat-widget {
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        width: 350px;
+        background: white;
+        border-radius: 12px 12px 0 0;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+        z-index: 1000;
+        font-family: 'Roboto', sans-serif;
+        transition: all 0.3s ease;
+    }
+
+    .chat-widget.collapsed {
+        height: 50px;
+        overflow: hidden;
+        border-radius: 25px;
+        width: 200px;
+    }
+
+    .chat-header {
+        background: #1a73e8;
+        color: white;
+        padding: 12px 20px;
+        cursor: pointer;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        border-radius: 12px 12px 0 0;
+    }
+
+    .chat-widget.collapsed .chat-header {
+        border-radius: 25px;
+    }
+
+    .chat-title {
+        font-weight: 500;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .chat-body {
+        height: 400px;
+        display: flex;
+        flex-direction: column;
+        border: 1px solid #dadce0;
+        border-top: none;
+    }
+
+    .chat-messages {
+        flex: 1;
+        padding: 15px;
+        overflow-y: auto;
+        background: #f8f9fa;
+    }
+
+    .message {
+        margin-bottom: 12px;
+        max-width: 80%;
+        padding: 10px 14px;
+        border-radius: 12px;
+        font-size: 14px;
+        line-height: 1.4;
+    }
+
+    .message.bot {
+        background: white;
+        border: 1px solid #eee;
+        align-self: flex-start;
+        border-bottom-left-radius: 2px;
+    }
+
+    .message.user {
+        background: #e8f0fe;
+        color: #1a73e8;
+        align-self: flex-end;
+        margin-left: auto;
+        border-bottom-right-radius: 2px;
+    }
+
+    .chat-input-area {
+        padding: 10px;
+        border-top: 1px solid #eee;
+        display: flex;
+        gap: 10px;
+        background: white;
+    }
+
+    .chat-input-area input {
+        flex: 1;
+        padding: 8px 12px;
+        border: 1px solid #dadce0;
+        border-radius: 20px;
+        outline: none;
+    }
+
+    .chat-input-area button {
+        background: none;
+        border: none;
+        color: #1a73e8;
+        cursor: pointer;
+    }
+</style>
+
+<script>
+    function toggleChat() {
+        const widget = document.getElementById('chatbot-widget');
+        widget.classList.toggle('collapsed');
+        const icon = widget.querySelector('.toggle-icon');
+        icon.textContent = widget.classList.contains('collapsed') ? 'expand_less' : 'expand_more';
+    }
+
+    function handleEnter(e) {
+        if (e.key === 'Enter') sendMessage();
+    }
+
+    async function sendMessage() {
+        const input = document.getElementById('user-input');
+        const text = input.value.trim();
+        if (!text) return;
+
+        // Add User Message
+        addMessage(text, 'user');
+        input.value = '';
+
+        // Context (simulated from page vars if available)
+        const context = {
+            message: text,
+            score: null,
+            topic: '{{ topic.title if topic else "" }}',
+            subject: '{{ subject.name if subject else "" }}'
+        };
+
+        // Call API
+        try {
+            const response = await fetch('/chat/ask', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(context)
+            });
+            const data = await response.json();
+            addMessage(data.response, 'bot');
+        } catch (err) {
+            addMessage("Sorry, I'm having trouble connecting to my brain.", 'bot');
+        }
+    }
+
+    function addMessage(html, type) {
+        const div = document.createElement('div');
+        div.className = `message ${type}`;
+        div.innerHTML = html;
+        document.getElementById('chat-messages').appendChild(div);
+        document.getElementById('chat-messages').scrollTop = document.getElementById('chat-messages').scrollHeight;
+    }
+</script>

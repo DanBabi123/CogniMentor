@@ -1,0 +1,65 @@
+{% extends "base.html" %}
+{% block title %}Login - CogniMentor{% endblock %}
+
+{% block content %}
+<div class="auth-page" style="display: flex; justify-content: center; align-items: center; min-height: 100vh;">
+    <!-- Background Elements -->
+    <div
+        style="position: absolute; width: 600px; height: 600px; background: radial-gradient(circle, rgba(26,115,232,0.08) 0%, rgba(255,255,255,0) 70%); top: -100px; right: -100px; z-index: 0; pointer-events: none;">
+    </div>
+
+    <div class="auth-card glass-panel animate-fade-up"
+        style="width: 100%; max-width: 420px; position: relative; z-index: 1;">
+
+        <div style="text-align: center; margin-bottom: 32px;">
+            <div
+                style="display: inline-flex; align-items: center; justify-content: center; width: 56px; height: 56px; background: var(--primary-light); border-radius: 16px; margin-bottom: 16px; color: var(--primary);">
+                <span class="material-icons" style="font-size: 32px;">school</span>
+            </div>
+            <h2 style="font-size: 24px; font-weight: 700; color: var(--text-primary); margin-bottom: 8px;">Welcome Back
+            </h2>
+            <p style="color: var(--text-secondary); margin: 0;">Sign in to continue your learning journey</p>
+        </div>
+
+        <form method="POST">
+            {{ form.hidden_tag() }}
+
+            <div class="form-group">
+                <label
+                    style="display: block; font-weight: 500; font-size: 13px; color: var(--text-secondary); margin-bottom: 6px;">Email
+                    Address</label>
+                {{ form.email(class="form-control", placeholder="john@example.com") }}
+            </div>
+
+            <div class="form-group">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+                    <label style="font-weight: 500; font-size: 13px; color: var(--text-secondary);">Password</label>
+                </div>
+                {{ form.password(class="form-control", placeholder="••••••••") }}
+            </div>
+
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 32px;">
+                <label
+                    style="display: flex; align-items: center; gap: 8px; font-size: 14px; color: var(--text-secondary); cursor: pointer; user-select: none;">
+                    {{ form.remember(style="width: 16px; height: 16px;") }} Remember me
+                </label>
+                <a href="{{ url_for('auth.reset_password_request') }}"
+                    style="font-size: 14px; color: var(--primary); font-weight: 600; text-decoration: none;">Forgot
+                    Password?</a>
+            </div>
+
+            <button type="submit" class="btn btn-primary" style="width: 100%; height: 48px; font-size: 16px;">
+                Sign In
+            </button>
+        </form>
+
+        <div
+            style="margin-top: 32px; padding-top: 24px; border-top: 1px solid var(--border-color); text-align: center; font-size: 14px;">
+            <span style="color: var(--text-secondary);">Don't have an account?</span>
+            <a href="{{ url_for('auth.signup') }}"
+                style="color: var(--primary); font-weight: 600; text-decoration: none; margin-left: 4px;">Create
+                Account</a>
+        </div>
+    </div>
+</div>
+{% endblock %}

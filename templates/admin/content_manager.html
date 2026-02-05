@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+
+{% block title %}Content Manager{% endblock %}
+
+{% block content %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}">
+
+<div class="dashboard-main">
+    <header class="section-header" style="display: flex; justify-content: space-between; align-items: center;">
+        <div>
+            <h2 class="page-title">Content Manager</h2>
+            <p class="page-subtitle">Manage Subjects and Topics</p>
+        </div>
+        <button class="btn btn-primary">
+            <span class="material-icons" style="vertical-align: middle; margin-right: 4px;">add</span> New Subject
+        </button>
+    </header>
+
+    <div class="card-grid">
+        {% for subject in subjects %}
+        <div class="subject-card">
+            <h3 class="subject-title" style="display: flex; justify-content: space-between;">
+                {{ subject.name }}
+                <span class="material-icons" style="color: var(--text-secondary);">more_vert</span>
+            </h3>
+            <p class="subject-desc">{{ subject.description }}</p>
+            <div style="margin-top: auto; padding-top: 16px; border-top: 1px solid var(--border-color);">
+                <strong>{{ subject.topics|length }}</strong> Topics
+                <button
+                    style="float: right; border: none; background: none; color: var(--primary); cursor: pointer; font-weight: 500;">Edit
+                    Topics</button>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

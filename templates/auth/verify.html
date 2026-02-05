@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+{% block title %}Verify Account - CogniMentor{% endblock %}
+
+{% block content %}
+<div class="auth-page"
+    style="display: flex; justify-content: center; align-items: center; min-height: 100vh; background: #f0f2f5;">
+    <div class="auth-card glass-panel" style="width: 100%; max-width: 400px; padding: 40px; background: white;">
+
+        <div style="text-align: center; margin-bottom: 30px;">
+            <span class="material-icons" style="font-size: 48px; color: var(--primary);">verified_user</span>
+            <h2 style="font-size: 24px; margin: 10px 0;">Verify Account</h2>
+            <p style="color: var(--gray-1);">Enter the OTP sent to your email.</p>
+        </div>
+
+        <form method="POST">
+            {{ form.hidden_tag() }}
+
+            <div class="form-group">
+                {{ form.otp(class="form-control", placeholder="Enter 6-digit OTP", style="text-align: center;
+                letter-spacing: 4px; font-weight: bold; font-size: 20px;") }}
+            </div>
+
+            <button type="submit" class="btn btn-primary" style="width: 100%;">
+                Verify Now <span class="material-icons">arrow_forward</span>
+            </button>
+        </form>
+
+        <div style="text-align: center; margin-top: 20px;">
+            <a href="{{ url_for('auth.logout') }}" style="font-size: 14px; color: var(--gray-1);">Logout</a>
+        </div>
+    </div>
+</div>
+{% endblock %}

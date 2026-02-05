@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+{% block title %}My Subjects{% endblock %}
+
+{% block content %}
+<div class="dashboard-wrapper animate-fade-up">
+
+    <header style="margin-bottom: 30px;">
+        <h1 style="font-size: 28px; font-weight: 700; color: var(--dark);">My Subjects</h1>
+        <p style="color: var(--gray-1);">Explore your enrolled courses and continue learning.</p>
+    </header>
+
+    <div class="card-grid">
+        {% for subject in subjects %}
+        <div class="subject-card glass-panel"
+            style="padding: 0; overflow: hidden; background: white; transition: transform 0.2s;">
+            <div
+                style="height: 120px; background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%); display: flex; align-items: center; justify-content: center;">
+                <span class="material-icons" style="font-size: 48px; color: white;">school</span>
+            </div>
+
+            <div style="padding: 24px;">
+                <h3 style="font-size: 18px; font-weight: 600; margin-bottom: 8px;">{{ subject.name }}</h3>
+                <p style="font-size: 14px; color: var(--gray-1); margin-bottom: 20px;">{{ subject.description }}</p>
+
+                <a href="{{ url_for('main.subject_view', subject_id=subject.id) }}" class="btn btn-outline"
+                    style="width: 100%;">
+                    Continue Learning
+                </a>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+</div>
+
+<style>
+    .subject-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+    }
+</style>
+{% endblock %}

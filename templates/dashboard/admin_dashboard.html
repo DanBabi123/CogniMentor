@@ -1,0 +1,73 @@
+{% extends "base.html" %}
+
+{% block title %}Admin Dashboard{% endblock %}
+
+{% block content %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}">
+
+<div class="dashboard-main">
+    <header class="section-header">
+        <h2 class="page-title">Admin Console</h2>
+        <p class="page-subtitle">System Overview & Analytics</p>
+    </header>
+
+    <!-- Stats Grid -->
+    <div class="stats-grid">
+        <div class="stat-card animate-fade-up" style="animation-delay: 0.1s;">
+            <div class="icon-box" style="background: #e8f0fe; color: #1967d2;">
+                <span class="material-icons">people</span>
+            </div>
+            <div class="stat-info">
+                <h3>{{ stats.total_users }}</h3>
+                <p>Total Users</p>
+            </div>
+        </div>
+
+        <div class="stat-card animate-fade-up" style="animation-delay: 0.2s;">
+            <div class="icon-box" style="background: #e6f4ea; color: #137333;">
+                <span class="material-icons">library_books</span>
+            </div>
+            <div class="stat-info">
+                <h3>{{ stats.total_subjects }}</h3>
+                <p>Total Subjects</p>
+            </div>
+        </div>
+
+        <div class="stat-card animate-fade-up" style="animation-delay: 0.3s;">
+            <div class="icon-box" style="background: #fce8e6; color: #c5221f;">
+                <span class="material-icons">dns</span>
+            </div>
+            <div class="stat-info">
+                <h3>{{ stats.system_health }}</h3>
+                <p>System Status</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quick Actions -->
+    <div class="recent-activity-section animate-fade-up" style="animation-delay: 0.4s; margin-top: 32px;">
+        <h3 class="page-title" style="font-size: 20px;">Quick Actions</h3>
+        <div
+            style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 24px; margin-top: 16px;">
+            <a href="{{ url_for('admin.manage_users') }}" class="glass-panel"
+                style="padding: 24px; text-align: center; cursor: pointer; text-decoration: none; color: inherit;">
+                <span class="material-icons"
+                    style="font-size: 32px; color: var(--primary); margin-bottom: 8px;">people</span>
+                <h4>Manage Users</h4>
+            </a>
+            <a href="{{ url_for('admin.content_manager') }}" class="glass-panel"
+                style="padding: 24px; text-align: center; cursor: pointer; text-decoration: none; color: inherit;">
+                <span class="material-icons"
+                    style="font-size: 32px; color: var(--primary); margin-bottom: 8px;">library_books</span>
+                <h4>Content Manager</h4>
+            </a>
+            <a href="{{ url_for('admin.analytics') }}" class="glass-panel"
+                style="padding: 24px; text-align: center; cursor: pointer; text-decoration: none; color: inherit;">
+                <span class="material-icons"
+                    style="font-size: 32px; color: var(--primary); margin-bottom: 8px;">analytics</span>
+                <h4>View Reports</h4>
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}

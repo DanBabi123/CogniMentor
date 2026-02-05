@@ -1,0 +1,124 @@
+{% extends "base.html" %}
+{% block title %}Advisor Assessment{% endblock %}
+
+{% block content %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}">
+<div class="dashboard-container">
+    <main class="dashboard-content advisor-container" style="max-width: 800px; margin: 0 auto;">
+
+        <h2 style="text-align: center;">Let's customize your {{ subject }} plan</h2>
+
+        <form action="{{ url_for('advisor.generate') }}" method="POST" class="assessment-form">
+
+            <div class="form-section">
+                <label>What is your current experience level?</label>
+                <div class="radio-group">
+                    <label><input type="radio" name="level" value="Beginner" required> Beginner</label>
+                    <label><input type="radio" name="level" value="Intermediate"> Intermediate</label>
+                    <label><input type="radio" name="level" value="Advanced"> Advanced</label>
+                </div>
+            </div>
+
+            <div class="form-section">
+                <label>What is your primary goal?</label>
+                <select name="goal" class="form-control" required>
+                    <option value="" disabled selected>Select a goal...</option>
+                    <option value="College Exams">Ace College Exams</option>
+                    <option value="Job/Placement">Job Placement / Interviews</option>
+                    <option value="Personal Project">Build a Project</option>
+                    <option value="Upskilling">General Upskilling</option>
+                </select>
+            </div>
+
+            <div class="form-section">
+                <label>How much time can you spend daily?</label>
+                <div class="time-options">
+                    <label class="time-pill"><input type="radio" name="time" value="30 mins"> 30 mins</label>
+                    <label class="time-pill"><input type="radio" name="time" value="1 hour" checked> 1 hour</label>
+                    <label class="time-pill"><input type="radio" name="time" value="2 hours"> 2 hours</label>
+                    <label class="time-pill"><input type="radio" name="time" value="3+ hours"> 3+ hours</label>
+                </div>
+            </div>
+
+            <div style="margin-top: 40px; text-align: center;">
+                <button type="submit" class="btn btn-lg btn-primary"
+                    onclick="this.innerHTML='Generating Plan...'">Generate Roadmap <span
+                        class="material-icons">auto_awesome</span></button>
+            </div>
+        </form>
+    </main>
+</div>
+
+<style>
+    .assessment-form {
+        background: white;
+        padding: 40px;
+        border-radius: 12px;
+        border: 1px solid #e0e0e0;
+        margin-top: 30px;
+    }
+
+    .form-section {
+        margin-bottom: 30px;
+    }
+
+    .form-section label {
+        display: block;
+        font-weight: 500;
+        font-size: 18px;
+        margin-bottom: 15px;
+        color: #202124;
+    }
+
+    .radio-group {
+        display: flex;
+        gap: 20px;
+    }
+
+    .radio-group label {
+        display: flex;
+        align-items: center;
+        cursor: pointer;
+        font-size: 16px;
+    }
+
+    .radio-group input {
+        margin-right: 8px;
+        width: 20px;
+        height: 20px;
+    }
+
+    .form-control {
+        width: 100%;
+        padding: 12px;
+        font-size: 16px;
+        border: 1px solid #dadce0;
+        border-radius: 8px;
+    }
+
+    .time-options {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+    }
+
+    .time-pill input {
+        display: none;
+    }
+
+    .time-pill {
+        padding: 8px 20px;
+        background: #f1f3f4;
+        border-radius: 20px;
+        cursor: pointer;
+        border: 1px solid transparent;
+    }
+
+    .time-pill:has(input:checked) {
+        background: #e8f0fe;
+        color: #1a73e8;
+        border-color: #1a73e8;
+        font-weight: 500;
+    }
+</style>
+{% endblock %}

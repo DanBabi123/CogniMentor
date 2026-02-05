@@ -1,0 +1,118 @@
+{% extends "base.html" %}
+
+{% block content %}
+<section class="hero">
+    <div class="container">
+        <div class="hero-content">
+            <h1 class="hero-title">Welcome to <span class="brand-highlight">CogniMentor</span></h1>
+            <p class="hero-tagline">Learn Smart. Crack Any Exam.</p>
+            <p class="hero-description">Your ultimate platform for Aptitude, CSE subjects, GATE preparation, and Government exam success.</p>
+            <div class="hero-buttons">
+                <a href="#cta" class="btn btn-primary">Get Started</a>
+                <a href="{{ url_for('auth.login') }}" class="btn btn-secondary">Login</a>
+            </div>
+        </div>
+        <div class="hero-visual">
+            <div class="floating-card card-1">
+                <span class="icon">📚</span>
+                <span>Aptitude</span>
+            </div>
+            <div class="floating-card card-2">
+                <span class="icon">💻</span>
+                <span>CSE</span>
+            </div>
+            <div class="floating-card card-3">
+                <span class="icon">🎓</span>
+                <span>GATE</span>
+            </div>
+            <div class="floating-card card-4">
+                <span class="icon">🏛️</span>
+                <span>Govt Exams</span>
+            </div>
+        </div>
+    </div>
+</section>
+
+
+<section id="features" class="features">
+    <div class="container">
+        <h2 class="section-title">Comprehensive Exam Preparation</h2>
+        <p class="section-subtitle">Master every subject with our expertly curated content</p>
+        <div class="features-grid">
+            <article class="feature-card">
+                <div class="feature-icon">📊</div>
+                <h3>Aptitude Training</h3>
+                <p>Quantitative aptitude, logical reasoning, and verbal ability with practice tests and detailed solutions.</p>
+            </article>
+            <article class="feature-card">
+                <div class="feature-icon">💾</div>
+                <h3>CSE Subjects</h3>
+                <p>Complete coverage of Data Structures, Algorithms, DBMS, Operating Systems, Networks, and more.</p>
+            </article>
+            <article class="feature-card">
+                <div class="feature-icon">🎯</div>
+                <h3>GATE Preparation</h3>
+                <p>Comprehensive GATE syllabus coverage with previous year questions and mock tests.</p>
+            </article>
+            <article class="feature-card">
+                <div class="feature-icon">📋</div>
+                <h3>Government Exams</h3>
+                <p>SSC, UPSC, Banking, Railways, and other competitive exam preparation materials.</p>
+            </article>
+        </div>
+    </div>
+</section>
+
+<section id="why-us" class="why-us">
+    <div class="container">
+        <h2 class="section-title">Why Choose CogniMentor?</h2>
+        <div class="why-grid">
+            <div class="why-card">
+                <div class="why-number">01</div>
+                <h3>Expert Content</h3>
+                <p>Curated by industry professionals and experienced educators with proven track records.</p>
+            </div>
+            <div class="why-card">
+                <div class="why-number">02</div>
+                <h3>Adaptive Learning</h3>
+                <p>Personalized study plans that adapt to your pace and learning style for maximum efficiency.</p>
+            </div>
+            <div class="why-card">
+                <div class="why-number">03</div>
+                <h3>Practice Tests</h3>
+                <p>Thousands of practice questions with detailed explanations and performance analytics.</p>
+            </div>
+            <div class="why-card">
+                <div class="why-number">04</div>
+                <h3>24/7 Support</h3>
+                <p>Round-the-clock doubt clearing and mentor support to keep you on track.</p>
+            </div>
+            <div class="why-card">
+                <div class="why-number">05</div>
+                <h3>Progress Tracking</h3>
+                <p>Advanced analytics to monitor your improvement and identify areas for focus.</p>
+            </div>
+            <div class="why-card">
+                <div class="why-number">06</div>
+                <h3>Affordable Pricing</h3>
+                <p>Premium quality education at prices that won't break the bank.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+
+<section id="cta" class="cta">
+    <div class="container">
+        <div class="cta-content">
+            <h2>Ready to Excel in Your Exams?</h2>
+            <p>Join thousands of successful students who trusted CogniMentor for their exam preparation journey.</p>
+            <div class="cta-buttons">
+                <a href="#" class="btn btn-primary btn-large">Start Free Trial</a>
+                <a href="#" class="btn btn-outline btn-large">View Pricing</a>
+            </div>
+            <p class="cta-note">No credit card required • 7-day free trial • Cancel anytime</p>
+        </div>
+    </div>
+</section>
+{% endblock %}

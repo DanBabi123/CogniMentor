@@ -1,0 +1,74 @@
+{% extends "base.html" %}
+{% block title %}{{ subject.name }}{% endblock %}
+
+{% block content %}
+<div class="dashboard-wrapper animate-fade-up">
+
+    <!-- Header -->
+    <header style="margin-bottom: 30px; display: flex; align-items: center; gap: 20px;">
+        <a href="{{ url_for('main.dashboard') }}" class="btn btn-outline"
+            style="border-radius: 50%; width: 40px; height: 40px; padding: 0;">
+            <span class="material-icons">arrow_back</span>
+        </a>
+        <div>
+            <h1 style="font-size: 28px; font-weight: 700; color: var(--dark); margin: 0;">{{ subject.name }}</h1>
+            <p style="color: var(--gray-1); margin: 4px 0 0 0;">{{ subject.description }}</p>
+        </div>
+    </header>
+
+    <!-- Module Roadmap -->
+    <div class="glass-panel" style="padding: 0; overflow: hidden; background: white;">
+        {% for item in topic_status %}
+        {% set topic = item.topic %}
+        <div class="topic-item"
+            style="display: flex; align-items: center; padding: 24px; border-bottom: 1px solid var(--gray-2); transition: background 0.2s; {% if item.is_locked %}opacity: 0.6; filter: grayscale(1);{% endif %}">
+            <!-- Status Icon -->
+            <div style="margin-right: 24px;">
+                {% if item.is_completed %}
+                <span class="material-icons" style="font-size: 28px; color: #137333;">check_circle</span>
+                {% elif item.is_locked %}
+                <span class="material-icons" style="font-size: 28px; color: var(--gray-2);">lock</span>
+                {% else %}
+                <span class="material-icons" style="font-size: 28px; color: var(--primary);">play_circle</span>
+                {% endif %}
+            </div>
+
+            <!-- Info -->
+            <div style="flex: 1;">
+                <h3 style="font-size: 18px; font-weight: 600; margin-bottom: 4px; color: var(--dark);">{{ topic.title }}
+                </h3>
+                <div style="display: flex; gap: 12px; font-size: 13px; color: var(--gray-1);">
+                    <span style="display: flex; align-items: center; gap: 4px;">
+                        <span class="material-icons" style="font-size: 14px;">signal_cellular_alt</span> {{
+                        topic.difficulty }}
+                    </span>
+                    <span style="display: flex; align-items: center; gap: 4px;">
+                        <span class="material-icons" style="font-size: 14px;">schedule</span> 15 mins
+                    </span>
+                </div>
+            </div>
+
+            <!-- Action -->
+            {% if item.is_locked %}
+            <button class="btn btn-disabled" style="background: #ccc; cursor: not-allowed;" disabled>Locked</button>
+            {% else %}
+            <a href="{{ url_for('main.topic_view', topic_id=topic.id) }}" class="btn btn-primary">
+                {% if item.is_completed %}Review{% else %}Start Learning{% endif %}
+            </a>
+            {% endif %}
+        </div>
+        {% endfor %}
+    </div>
+
+</div>
+
+<style>
+    .topic-item:hover {
+        background-color: var(--gray-3);
+    }
+
+    .topic-item:last-child {
+        border-bottom: none;
+    }
+</style>
+{% endblock %}
