@@ -57,4 +57,3 @@ CogniMentor V2 is a production-grade educational platform featuring advanced OTP
 - **Content**: `Topic` Model (JSON Payload) OR `AI Engine` (Fallback Generation) -> View.
 
 ---
-*CogniMentor Architect Team*
