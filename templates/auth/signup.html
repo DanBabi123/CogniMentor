@@ -2,47 +2,62 @@
 {% block title %}Sign Up - CogniMentor{% endblock %}
 
 {% block content %}
-<div class="auth-page"
-    style="display: flex; justify-content: center; align-items: center; min-height: 100vh; background: #f0f2f5;">
-    <div class="auth-card glass-panel" style="width: 100%; max-width: 450px; padding: 40px; background: white;">
+<div class="main-content bg-gradient-hero flex-center flex-col min-h-screen relative overflow-hidden"
+    style="display: flex; align-items: center; justify-content: center; min-height: 100vh; flex-direction: column;">
 
-        <div style="text-align: center; margin-bottom: 30px;">
-            <div style="font-weight: 700; color: var(--primary); font-size: 26px; margin-bottom: 8px;">CogniMentor</div>
-            <h2 style="font-size: 20px; font-weight: 600;">Create Account</h2>
-            <p style="color: var(--gray-1);">Join thousands of learners today.</p>
+    <!-- Decorative Visual Blobs -->
+    <div
+        style="position: absolute; top: -10%; right: -10%; width: 50%; height: 50%; background: radial-gradient(circle, rgba(16, 185, 129, 0.2) 0%, rgba(16, 185, 129, 0) 70%); border-radius: 50%; filter: blur(60px); z-index: 0;">
+    </div>
+    <div
+        style="position: absolute; bottom: -10%; left: -10%; width: 50%; height: 50%; background: radial-gradient(circle, rgba(59, 130, 246, 0.2) 0%, rgba(59, 130, 246, 0) 70%); border-radius: 50%; filter: blur(60px); z-index: 0;">
+    </div>
+
+    <div
+        class="glass-panel w-full max-w-md p-8 animate-fade-up relative z-10 mx-auto shadow-2xl border border-white/40">
+
+        <div class="text-center mb-8">
+            <div
+                class="text-primary font-bold text-2xl mb-2 flex-center gap-2 py-2 px-4 bg-primary-light/50 rounded-full inline-flex mx-auto">
+                <span class="material-icons">school</span> CogniMentor
+            </div>
+            <h2 class="text-2xl font-bold text-dark mt-4">Create Account</h2>
+            <p class="text-muted text-sm">Join thousands of learners today.</p>
         </div>
 
-        <form method="POST">
+        <form method="POST" class="flex flex-col gap-4">
             {{ form.hidden_tag() }}
 
             <div class="form-group">
-                {{ form.name.label(style="display:none;") }}
-                {{ form.name(class="form-control", placeholder="Full Name") }}
+                <label class="form-label font-semibold">Full Name</label>
+                {{ form.name(class="form-control hover-ring", placeholder="Full Name") }}
             </div>
 
             <div class="form-group">
-                {{ form.email.label(style="display:none;") }}
-                {{ form.email(class="form-control", placeholder="Email Address") }}
+                <label class="form-label font-semibold">Email Address</label>
+                {{ form.email(class="form-control hover-ring", placeholder="john@example.com") }}
             </div>
 
             <div class="form-group">
-                {{ form.password.label(style="display:none;") }}
-                {{ form.password(class="form-control", placeholder="Password") }}
+                <label class="form-label font-semibold">Password</label>
+                {{ form.password(class="form-control hover-ring", placeholder="Create a password") }}
             </div>
 
             <div class="form-group">
-                {{ form.confirm_password.label(style="display:none;") }}
-                {{ form.confirm_password(class="form-control", placeholder="Confirm Password") }}
+                <label class="form-label font-semibold">Confirm Password</label>
+                {{ form.confirm_password(class="form-control hover-ring", placeholder="Confirm password") }}
             </div>
 
-            <button type="submit" class="btn btn-primary" style="width: 100%;">
-                Create Account <span class="material-icons">arrow_forward</span>
+            <button type="submit"
+                class="btn btn-primary w-full justify-center py-3 text-lg mt-2 font-bold shadow-lg hover:shadow-xl transition-all hover:-translate-y-1">
+                <span>Create Account</span>
+                <span class="material-icons ml-2 text-sm">arrow_forward</span>
             </button>
         </form>
 
-        <div style="margin-top: 30px; text-align: center; font-size: 14px;">
-            <span style="color: var(--gray-1);">Already have an account?</span>
-            <a href="{{ url_for('auth.login') }}" style="color: var(--primary); font-weight: 600;">Log In</a>
+        <div class="mt-8 pt-6 border-t border-gray-200 text-center text-sm">
+            <span class="text-gray-600">Already have an account?</span>
+            <a href="{{ url_for('auth.login') }}" class="text-primary font-bold hover:underline ml-1">Log In</a>
         </div>
     </div>
 </div>

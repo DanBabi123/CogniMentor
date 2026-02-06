@@ -13,15 +13,21 @@ class User(UserMixin, db.Model):
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     profile_pic = db.Column(db.String(150), nullable=True, default='default.jpg')
     role = db.Column(db.String(20), default='student') # student, admin
+    selected_goal = db.Column(db.String(50), nullable=True) # Technology, Govt, GATE
     
     # Security / OTP fields
     is_verified = db.Column(db.Boolean, default=False)
+    is_first_login = db.Column(db.Boolean, default=True)
     otp_code = db.Column(db.String(6), nullable=True)
     otp_expiry = db.Column(db.DateTime, nullable=True)
     
     # Relationships
     progress = db.relationship('LearningProgress', backref='user', lazy=True)
     quiz_attempts = db.relationship('QuizAttempt', backref='user', lazy=True)
+    
+    # Track current focus subject
+    current_subject_id = db.Column(db.Integer, db.ForeignKey('subjects.id'), nullable=True)
+    current_subject = db.relationship('Subject', foreign_keys=[current_subject_id])
 
     def set_password(self, password):
         self.password_hash = generate_password_hash(password)
@@ -35,6 +41,7 @@ class Subject(db.Model):
     name = db.Column(db.String(100), nullable=False)
     description = db.Column(db.Text)
     icon = db.Column(db.String(50), default='school') # Material Icon Name
+    category = db.Column(db.String(50), default='Technology') # Technology, Government, GATE
     
     # Relationships
     topics = db.relationship('Topic', backref='subject', lazy=True)

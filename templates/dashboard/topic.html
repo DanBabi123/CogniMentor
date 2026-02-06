@@ -1,95 +1,113 @@
-{% extends "base.html" %}
-{% block title %}{{ topic.title }}{% endblock %}
+{% extends "dashboard/dashboard_focus_layout.html" %}
+{% block title %}{{ topic.title }} | CogniMentor{% endblock %}
 
-{% block content %}
-<div class="dashboard-wrapper animate-fade-up" style="display: flex; gap: 30px; align-items: flex-start;">
+{% block focus_content %}
+<article class="dashboard-main animate-fade-up">
+    <!-- Header -->
+    <header class="text-center mb-8">
+        <span class="badge badge-primary text-xs uppercase">{{ topic.difficulty }}</span>
+        <h1 class="page-title justify-center mt-4 text-3xl">{{ topic.title }}</h1>
+    </header>
 
-    <!-- Sidebar Navigation -->
-    <aside class="glass-panel"
-        style="width: 280px; position: sticky; top: 20px; padding: 0; background: white; max-height: calc(100vh - 40px); overflow-y: auto;">
-        <div style="padding: 20px; border-bottom: 1px solid var(--gray-2);">
-            <a href="{{ url_for('main.subject_view', subject_id=topic.subject.id) }}"
-                style="display: flex; align-items: center; gap: 8px; font-weight: 600; color: var(--gray-1); font-size: 14px;">
-                <span class="material-icons" style="font-size: 18px;">arrow_back</span> {{ topic.subject.name }}
-            </a>
-        </div>
-        <div style="padding: 10px 0;">
-            {% for t in all_topics %}
-            <a href="{{ url_for('main.topic_view', topic_id=t.id) }}"
-                style="display: block; padding: 12px 20px; font-size: 14px; color: {% if t.id == topic.id %}var(--primary){% else %}var(--dark){% endif %}; background: {% if t.id == topic.id %}var(--primary-light){% else %}transparent{% endif %}; border-left: 3px solid {% if t.id == topic.id %}var(--primary){% else %}transparent{% endif %};">
-                {{ loop.index }}. {{ t.title }}
-            </a>
+    <!-- Structured Content -->
+    {% if is_structured %}
+    {% set data = structured_data %}
+
+    <!-- Check for New AI Engine Format (Single HTML Blob) -->
+    {% if data.topic_content %}
+    <div class="glass-panel p-8 content-body">
+        {{ data.topic_content | safe }}
+    </div>
+
+    <!-- Legacy Structured Format (Sections List) -->
+    {% elif data.sections %}
+    {% if data.objectives %}
+    <div class="glass-panel p-6 mb-8 bg-primary-light border-none">
+        <h4 class="text-primary font-bold d-flex align-center gap-2 mb-4">
+            <span class="material-icons">flag</span> Learning Objectives
+        </h4>
+        <ul class="list-disc pl-6">
+            {% for obj in data.objectives %}
+            <li class="mb-2">{{ obj }}</li>
             {% endfor %}
-        </div>
-    </aside>
+        </ul>
+    </div>
+    {% endif %}
 
-    <!-- Content Area -->
-    <main class="glass-panel" style="flex: 1; padding: 40px; background: white; max-width: 900px;">
-        <!-- Header -->
-        <header style="margin-bottom: 40px; text-align: center;">
-            <span
-                style="background: var(--primary-light); color: var(--primary); padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: 700; text-transform: uppercase;">{{
-                topic.difficulty }}</span>
-            <h1 style="font-size: 36px; font-weight: 800; margin: 16px 0 0 0; color: var(--dark);">{{ topic.title }}
-            </h1>
-        </header>
+    <div class="content-body">
+        {% for section in data.sections %}
+        <section class="mb-8 card p-6">
+            <h2 class="section-title text-xl mb-4">{{ section.heading }}</h2>
+            <div class="mb-4 text-gray-700 leading-relaxed">{{ section.content }}</div>
 
-        <!-- Structured Content -->
-        {% if is_structured %}
-        {% set data = structured_data %}
+            {% if section.code %}
+            <div class="bg-dark p-4 rounded-md overflow-x-auto text-sm text-gray-300 font-mono">
+                <pre class="m-0"><code>{{ section.code }}</code></pre>
+            </div>
+            {% endif %}
+        </section>
+        {% endfor %}
+    </div>
+    {% endif %}
 
-        {% if data.objectives %}
-        <div style="background: var(--primary-light); padding: 24px; border-radius: 12px; margin-bottom: 40px;">
-            <h4 style="color: var(--primary); margin: 0 0 16px 0; display: flex; align-items: center; gap: 8px;">
-                <span class="material-icons">flag</span> Learning Objectives
-            </h4>
-            <ul style="padding-left: 20px; margin: 0;">
-                {% for obj in data.objectives %}
-                <li style="margin-bottom: 8px; color: var(--dark);">{{ obj }}</li>
-                {% endfor %}
-            </ul>
-        </div>
-        {% endif %}
+    {% else %}
+    <!-- Basic AI Fallback -->
+    <div class="bg-primary-light text-primary p-4 rounded-md mb-4 text-center font-bold">
+        <span class="material-icons animate-spin mr-2">sync</span> AI Content Loading...
+    </div>
+    {% endif %}
 
-        <div class="content-body" style="font-size: 18px; line-height: 1.8; color: #374151;">
-            {% for section in data.sections %}
-            <section style="margin-bottom: 40px;">
-                <h2 style="font-size: 24px; font-weight: 700; color: var(--dark); margin-bottom: 16px;">{{
-                    section.heading }}</h2>
-                <div style="margin-bottom: 20px;">{{ section.content }}</div>
+    <!-- Actions -->
+    <div class="d-flex justify-between align-center mt-12 pt-8 border-t border-light">
+        <a href="{{ url_for('main.dashboard') }}" class="btn btn-outline">
+            <span class="material-icons">arrow_back</span> Back to Overview
+        </a>
 
-                {% if section.code %}
-                <div
-                    style="background: #1e1e1e; padding: 20px; border-radius: 8px; overflow-x: auto; color: #d4d4d4; font-family: monospace; font-size: 14px;">
-                    <pre style="margin: 0;"><code>{{ section.code }}</code></pre>
-                </div>
-                {% endif %}
-            </section>
-            {% endfor %}
-        </div>
+        <a href="{{ url_for('main.quiz_view', topic_id=topic.id) }}" class="btn btn-primary btn-lg">
+            Take Quiz <span class="material-icons">arrow_forward</span>
+        </a>
+    </div>
+</article>
 
-        {% else %}
-        <!-- Unstructured/AI Fallback -->
-        <div class="alert"
-            style="background: var(--primary-light); color: var(--primary); padding: 16px; border-radius: 8px; margin-bottom: 20px;">
-            Generated by CogniMentor AI
-        </div>
-        <div class="content-body">
-            {{ content.beginner|safe }}
-        </div>
-        {% endif %}
+<style>
+    /* Typography for AI Content */
+    .content-body h1,
+    .content-body h2,
+    .content-body h3 {
+        color: var(--dark);
+        font-weight: 700;
+        margin-bottom: 1rem;
+        margin-top: 2rem;
+    }
 
-        <!-- Actions -->
-        <div
-            style="margin-top: 60px; padding-top: 30px; border-top: 1px solid var(--gray-2); display: flex; justify-content: space-between; align-items: center;">
-            <button class="btn btn-outline" disabled>Previous</button>
-            <a href="{{ url_for('main.quiz_view', topic_id=topic.id) }}" class="btn btn-primary btn-lg"
-                style="padding: 16px 32px; font-size: 16px;">
-                Take Quiz <span class="material-icons">arrow_forward</span>
-            </a>
-        </div>
+    .content-body p {
+        margin-bottom: 1rem;
+        line-height: 1.8;
+        color: var(--text-main);
+    }
 
-    </main>
+    .content-body ul,
+    .content-body ol {
+        margin-bottom: 1rem;
+        padding-left: 1.5rem;
+    }
 
-</div>
+    .content-body li {
+        margin-bottom: 0.5rem;
+    }
+
+    .content-body strong {
+        color: var(--primary);
+    }
+
+    .content-body blockquote {
+        border-left: 4px solid var(--primary);
+        padding-left: 1rem;
+        color: var(--text-muted);
+        font-style: italic;
+        background: var(--bg-body);
+        padding: 1rem;
+        border-radius: 0 8px 8px 0;
+    }
+</style>
 {% endblock %}

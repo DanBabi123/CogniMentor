@@ -1,0 +1,158 @@
+{% extends "dashboard/dashboard_layout.html" %}
+
+{% block dashboard_content %}
+<div class="card"
+    style="height: calc(100vh - 140px); display: flex; flex-direction: column; padding: 0; overflow: hidden;">
+    <!-- Chat Header -->
+    <div
+        style="padding: 16px 24px; border-bottom: 1px solid #f1f5f9; background: #fafafa; display: flex; align-items: center; justify-content: space-between;">
+        <div style="display: flex; align-items: center; gap: 12px;">
+            <div
+                style="width: 40px; height: 40px; background: linear-gradient(135deg, #4f46e5, #6366f1); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white;">
+                <i class="fas fa-robot"></i>
+            </div>
+            <div>
+                <h3 style="margin: 0; font-size: 1rem;">CogniMentor AI</h3>
+                <span
+                    style="font-size: 0.8rem; color: var(--secondary-color); display: flex; align-items: center; gap: 4px;">
+                    <span
+                        style="width: 8px; height: 8px; background: var(--secondary-color); border-radius: 50%;"></span>
+                    Online
+                </span>
+            </div>
+        </div>
+        <button class="btn-secondary" onclick="clearChat()"
+            style="border: 1px solid #e2e8f0; background: white; padding: 6px 12px; border-radius: 6px; cursor: pointer;">
+            <i class="fas fa-trash-alt"></i> Clear
+        </button>
+    </div>
+
+    <!-- Chat Messages Area -->
+    <div id="chat-messages"
+        style="flex: 1; padding: 24px; overflow-y: auto; display: flex; flex-direction: column; gap: 16px; background: #f8fafc;">
+        <!-- Welcome Message -->
+        <div class="message ai-message" style="display: flex; gap: 12px; max-width: 80%;">
+            <div
+                style="width: 32px; height: 32px; background: #e0e7ff; color: #4f46e5; border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+                <i class="fas fa-robot" style="font-size: 0.8rem;"></i>
+            </div>
+            <div
+                style="background: white; padding: 12px 16px; border-radius: 12px 12px 12px 0; border: 1px solid #e2e8f0; box-shadow: var(--shadow-sm);">
+                <p style="margin: 0; font-size: 0.95rem;">Hello {{ current_user.name.split()[0] }}! I'm your AI Mentor.
+                    How can I help you prepare today?</p>
+                <div style="margin-top: 12px; display: flex; gap: 8px; flex-wrap: wrap;">
+                    <button onclick="sendPrompt('Explain the concept of Recursion')"
+                        style="background: #f1f5f9; border: none; padding: 6px 12px; border-radius: 16px; font-size: 0.8rem; color: #4f46e5; cursor: pointer; transition: background 0.2s;">Explain
+                        Recursion</button>
+                    <button onclick="sendPrompt('Give me a quiz on Data Structures')"
+                        style="background: #f1f5f9; border: none; padding: 6px 12px; border-radius: 16px; font-size: 0.8rem; color: #4f46e5; cursor: pointer; transition: background 0.2s;">Quiz
+                        me on DSA</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Input Area -->
+    <div style="padding: 16px 24px; background: white; border-top: 1px solid #f1f5f9;">
+        <div style="position: relative; display: flex; gap: 12px;">
+            <input type="text" id="user-input" placeholder="Ask a question..."
+                style="flex: 1; padding: 12px 16px; border: 1px solid #e2e8f0; border-radius: 8px; outline: none; transition: border 0.2s;"
+                onkeypress="handleEnter(event)">
+            <button onclick="sendMessage()"
+                style="padding: 0 24px; background: var(--primary-color); color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: 600; display: flex; align-items: center; gap: 8px;">
+                Send <i class="fas fa-paper-plane"></i>
+            </button>
+        </div>
+    </div>
+</div>
+
+<script>
+    const chatBox = document.getElementById('chat-messages');
+
+    function handleEnter(e) {
+        if (e.key === 'Enter') sendMessage();
+    }
+
+    function sendPrompt(text) {
+        document.getElementById('user-input').value = text;
+        sendMessage();
+    }
+
+    function clearChat() {
+        chatBox.innerHTML = `
+        <div class="message ai-message" style="display: flex; gap: 12px; max-width: 80%;">
+            <div style="width: 32px; height: 32px; background: #e0e7ff; color: #4f46e5; border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+                <i class="fas fa-robot" style="font-size: 0.8rem;"></i>
+            </div>
+            <div style="background: white; padding: 12px 16px; border-radius: 12px 12px 12px 0; border: 1px solid #e2e8f0; box-shadow: var(--shadow-sm);">
+                <p style="margin: 0; font-size: 0.95rem;">Chat cleared. Check details or start a new topic!</p>
+            </div>
+        </div>`;
+    }
+
+    async function sendMessage() {
+        const input = document.getElementById('user-input');
+        const text = input.value.trim();
+        if (!text) return;
+
+        // User Message UI
+        const userDiv = document.createElement('div');
+        userDiv.style.cssText = "display: flex; gap: 12px; max-width: 80%; margin-left: auto; flex-direction: row-reverse;";
+        userDiv.innerHTML = `
+            <div style="width: 32px; height: 32px; background: #f1f5f9; color: var(--text-muted); border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+                <i class="fas fa-user" style="font-size: 0.8rem;"></i>
+            </div>
+            <div style="background: var(--primary-color); color: white; padding: 12px 16px; border-radius: 12px 12px 0 12px; box-shadow: var(--shadow-sm);">
+                <p style="margin: 0; font-size: 0.95rem;">${text}</p>
+            </div>
+        `;
+        chatBox.appendChild(userDiv);
+        chatBox.scrollTop = chatBox.scrollHeight;
+        input.value = '';
+
+        // Typing Indicator
+        const loadingDiv = document.createElement('div');
+        loadingDiv.id = 'loading-msg';
+        loadingDiv.style.cssText = "display: flex; gap: 12px; max-width: 80%;";
+        loadingDiv.innerHTML = `
+            <div style="width: 32px; height: 32px; background: #e0e7ff; color: #4f46e5; border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+                <i class="fas fa-robot" style="font-size: 0.8rem;"></i>
+            </div>
+            <div style="background: white; padding: 12px 16px; border-radius: 12px 12px 12px 0; border: 1px solid #e2e8f0; box-shadow: var(--shadow-sm);">
+                 <i class="fas fa-ellipsis-h fa-fade"></i>
+            </div>
+        `;
+        chatBox.appendChild(loadingDiv);
+        chatBox.scrollTop = chatBox.scrollHeight;
+
+        try {
+            const response = await fetch("{{ url_for('chatbot.ask') }}", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ message: text })
+            });
+            const data = await response.json();
+
+            document.getElementById('loading-msg').remove();
+
+            // AI Response UI
+            const aiDiv = document.createElement('div');
+            aiDiv.style.cssText = "display: flex; gap: 12px; max-width: 80%;";
+            aiDiv.innerHTML = `
+                <div style="width: 32px; height: 32px; background: #e0e7ff; color: #4f46e5; border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+                    <i class="fas fa-robot" style="font-size: 0.8rem;"></i>
+                </div>
+                <div style="background: white; padding: 12px 16px; border-radius: 12px 12px 12px 0; border: 1px solid #e2e8f0; box-shadow: var(--shadow-sm);">
+                    <p style="margin: 0; font-size: 0.95rem; white-space: pre-wrap;">${data.response}</p>
+                </div>
+            `;
+            chatBox.appendChild(aiDiv);
+            chatBox.scrollTop = chatBox.scrollHeight;
+
+        } catch (error) {
+            document.getElementById('loading-msg').remove();
+            alert("Error connecting to AI Mentor.");
+        }
+    }
+</script>
+{% endblock %}

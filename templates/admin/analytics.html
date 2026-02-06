@@ -1,0 +1,161 @@
+{% extends "base.html" %}
+{% block title %}Platform Analytics - Admin{% endblock %}
+
+{% block content %}
+<div class="main-content bg-gradient-hero flex-col min-h-screen">
+
+    <header class="mb-10 text-center">
+        <h1 class="page-title">Platform Analytics</h1>
+        <p class="text-muted">Deep dive into user growth, engagement, and content performance.</p>
+    </header>
+
+    <!-- Key Metrics Grid -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8 w-full">
+        <div class="glass-panel p-6 flex flex-col justify-between hover:translate-y-1 transition-all">
+            <div>
+                <div class="text-muted text-xs font-bold uppercase tracking-wider mb-2">Total Users</div>
+                <div class="text-3xl font-bold text-dark">{{ total_users }}</div>
+            </div>
+            <div
+                class="text-success text-sm mt-3 flex items-center gap-1 font-medium bg-green-50 w-max px-2 py-1 rounded-lg">
+                <span class="material-icons text-sm">trending_up</span> +12% this week
+            </div>
+        </div>
+
+        <div class="glass-panel p-6 flex flex-col justify-between hover:translate-y-1 transition-all">
+            <div>
+                <div class="text-muted text-xs font-bold uppercase tracking-wider mb-2">Active Learners</div>
+                <div class="text-3xl font-bold text-dark">{{ active_users }}</div>
+            </div>
+            <div
+                class="text-success text-sm mt-3 flex items-center gap-1 font-medium bg-green-50 w-max px-2 py-1 rounded-lg">
+                <span class="material-icons text-sm">people</span> 80% Retention
+            </div>
+        </div>
+
+        <div class="glass-panel p-6 flex flex-col justify-between hover:translate-y-1 transition-all">
+            <div>
+                <div class="text-muted text-xs font-bold uppercase tracking-wider mb-2">Avg. Quiz Score</div>
+                <div class="text-3xl font-bold text-dark">76%</div>
+            </div>
+            <div
+                class="text-warning text-sm mt-3 flex items-center gap-1 font-medium bg-yellow-50 w-max px-2 py-1 rounded-lg">
+                <span class="material-icons text-sm">leaderboard</span> Platform Wide
+            </div>
+        </div>
+
+        <div class="glass-panel p-6 flex flex-col justify-between hover:translate-y-1 transition-all">
+            <div>
+                <div class="text-muted text-xs font-bold uppercase tracking-wider mb-2">Content Quality</div>
+                <div class="text-3xl font-bold text-dark">98%</div>
+            </div>
+            <div
+                class="text-primary text-sm mt-3 flex items-center gap-1 font-medium bg-blue-50 w-max px-2 py-1 rounded-lg">
+                <span class="material-icons text-sm">verified</span> AI Verified
+            </div>
+        </div>
+    </div>
+
+    <!-- Charts Section -->
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 w-full">
+
+        <!-- Main Growth Chart -->
+        <div class="glass-panel lg:col-span-2 relative overflow-hidden">
+            <div class="flex-between mb-6">
+                <h3 class="font-bold text-lg text-main">User Growth Trend</h3>
+                <select class="select w-auto py-1 px-3 text-sm">
+                    <option>Last 6 Months</option>
+                    <option>Last Year</option>
+                </select>
+            </div>
+            <div class="relative h-[350px] w-full">
+                <canvas id="growthChart"></canvas>
+            </div>
+        </div>
+
+        <!-- Subject Distribution -->
+        <div class="glass-panel flex flex-col">
+            <h3 class="font-bold text-lg text-main mb-6">Category Popularity</h3>
+            <div class="relative flex-1 min-h-[300px] flex-center">
+                <canvas id="subjectChart"></canvas>
+            </div>
+        </div>
+
+    </div>
+
+</div>
+
+<!-- Chart.js -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        // Data from Flask
+        const growthData = {{ growth_data | tojson | safe
+    }};
+    const subjectData = {{ subject_data | tojson | safe }};
+
+    // Growth Chart
+    const ctxGrowth = document.getElementById('growthChart').getContext('2d');
+    const gradientGrowth = ctxGrowth.createLinearGradient(0, 0, 0, 400);
+    gradientGrowth.addColorStop(0, 'rgba(79, 70, 229, 0.2)');
+    gradientGrowth.addColorStop(1, 'rgba(79, 70, 229, 0)');
+
+    new Chart(ctxGrowth, {
+        type: 'line',
+        data: {
+            labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+            datasets: [{
+                label: 'New Users',
+                data: growthData,
+                borderColor: '#4f46e5',
+                backgroundColor: gradientGrowth,
+                borderWidth: 3,
+                tension: 0.4,
+                fill: true,
+                pointRadius: 4,
+                pointBackgroundColor: '#fff',
+                pointBorderColor: '#4f46e5',
+                pointBorderWidth: 2
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: { legend: { display: false } },
+            scales: {
+                y: { beginAtZero: true, grid: { borderDash: [5, 5], color: '#f3f4f6' } },
+                x: { grid: { display: false } }
+            }
+        }
+    });
+
+    // Subject Chart
+    const ctxSubject = document.getElementById('subjectChart').getContext('2d');
+    new Chart(ctxSubject, {
+        type: 'doughnut',
+        data: {
+            labels: subjectData.labels,
+            datasets: [{
+                data: subjectData.data,
+                backgroundColor: [
+                    '#4f46e5', // Primary
+                    '#10b981', // Secondary
+                    '#f59e0b', // Accent
+                    '#64748b'  // Muted
+                ],
+                borderWidth: 0,
+                hoverOffset: 4
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: { position: 'bottom', labels: { usePointStyle: true, padding: 20, font: { family: 'Inter' } } }
+            },
+            cutout: '75%'
+        }
+    });
+    });
+</script>
+{% endblock %}

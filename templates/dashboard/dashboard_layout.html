@@ -1,0 +1,63 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard | CogniMentor{% endblock %}
+
+{% block content %}
+<div class="dashboard-main">
+    <!-- Dashboard Top Header -->
+    <header class="top-header animate-fade-in">
+        <div class="welcome-section">
+            <h1 style="font-size: 1.5rem; margin-bottom: 4px;">Good Morning, {{ current_user.name.split()[0] }} 👋</h1>
+            <div class="date-badge text-muted text-sm">
+                <i class="far fa-calendar-alt"></i> <span id="current-date-display">Today</span>
+            </div>
+        </div>
+
+        <div class="flex-center gap-lg">
+
+            <!-- Global Search -->
+            <div class="header-search">
+                <span class="material-icons" style="color: var(--text-light); font-size: 20px;">search</span>
+                <input type="text" placeholder="Search subjects, topics...">
+            </div>
+
+            <div class="header-actions flex-center gap-md">
+
+                <!-- Goal Badge -->
+                <div class="badge badge-primary flex-center gap-sm">
+                    <span class="material-icons" style="font-size: 16px;">track_changes</span>
+                    {{ current_user.selected_goal | default('General') }}
+                </div>
+
+                <!-- Streak Counter -->
+                {% if stats and stats.streak > 0 %}
+                <div class="badge badge-warning flex-center gap-sm" title="Current Streak">
+                    <span class="material-icons"
+                        style="font-size: 16px; color: var(--danger);">local_fire_department</span>
+                    {{ stats.streak }} Day Streak
+                </div>
+                {% endif %}
+
+                <!-- Notification Icon -->
+                <button class="btn-icon" style="position: relative;">
+                    <span class="material-icons">notifications</span>
+                    <span
+                        style="position: absolute; top: 6px; right: 8px; width: 8px; height: 8px; background: var(--danger); border-radius: 50%; border: 1px solid white;"></span>
+                </button>
+
+            </div>
+        </div>
+    </header>
+
+    <!-- Dynamic Dashboard Content -->
+    <div class="dashboard-body animate-fade-in" style="animation-delay: 0.1s;">
+        {% block dashboard_content %}{% endblock %}
+    </div>
+</div>
+
+<script>
+    // Simple Date Display
+    const dateOptions = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+    document.getElementById('current-date-display').textContent = new Date().toLocaleDateString('en-US', dateOptions);
+</script>
+{% endblock %}

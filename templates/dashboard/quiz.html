@@ -1,74 +1,283 @@
 {% extends "base.html" %}
-{% block title %}Quiz: {{ topic.title }}{% endblock %}
+{% block title %}Quiz: {{ topic.title }} | CogniMentor{% endblock %}
 
 {% block content %}
-<div class="dashboard-wrapper animate-fade-up">
+<div class="main-content min-h-screen bg-gray-50 py-8 px-4 md:px-8">
 
-    <div style="max-width: 800px; margin: 0 auto;">
+    <!-- Main "Exam Paper" Container -->
+    <div class="max-w-6xl mx-auto bg-white rounded-2xl shadow-xl overflow-hidden border border-gray-100 relative">
 
-        <!-- Quiz Header -->
-        <header style="text-align: center; margin-bottom: 40px;">
-            <div
-                style="display: inline-block; padding: 6px 16px; background: var(--primary-light); color: var(--primary); border-radius: 20px; font-weight: 600; font-size: 14px; margin-bottom: 16px;">
-                QUIZ MODE
+        <!-- Header & Progress Sticky Widget -->
+        <div class="bg-white border-b border-gray-100 p-6 sticky top-0 z-30 shadow-sm backdrop-blur-md bg-white/95">
+            <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-4">
+                <div>
+                    <h1 class="text-3xl font-bold text-gray-900 flex items-center gap-3">
+                        {{ topic.title }}
+                        <span
+                            class="px-3 py-1 rounded-full bg-primary/10 text-primary text-sm font-bold uppercase tracking-wider">Assessment</span>
+                    </h1>
+                </div>
+
+                <!-- Progress Stats -->
+                <div class="flex items-center gap-4 text-sm font-medium text-gray-500">
+                    <span class="flex items-center gap-1">
+                        <span class="material-icons text-xs">check_circle</span>
+                        <span id="answered-count-display" class="text-gray-900 font-bold">0</span>/{{ questions|length
+                        }} Answered
+                    </span>
+                    <div class="w-32 h-2 bg-gray-100 rounded-full overflow-hidden">
+                        <div class="h-full bg-primary transition-all duration-300" style="width: 0%"
+                            id="linear-progress-bar"></div>
+                    </div>
+                </div>
             </div>
-            <h1 style="font-size: 32px; font-weight: 700;">{{ topic.title }}</h1>
-            <p style="color: var(--gray-1);">Answer carefully. Your progress depends on accuracy.</p>
-        </header>
 
+            <!-- Quick Nav Scroller -->
+            <div class="flex items-center gap-2 overflow-x-auto pb-2 scrollbar-hide py-1">
+                <span class="text-xs font-bold text-gray-400 uppercase mr-2 flex-shrink-0">Navigate:</span>
+                {% for q in questions %}
+                <a href="#q-item-{{ loop.index }}" id="nav-{{ loop.index }}"
+                    class="flex-shrink-0 w-8 h-8 rounded hover:bg-gray-100 flex items-center justify-center text-xs font-bold text-gray-400 transition-colors border border-transparent hover:border-gray-200"
+                    style="text-decoration: none;">
+                    {{ loop.index }}
+                </a>
+                {% endfor %}
+            </div>
+        </div>
+
+        <!-- Scrollable Question List -->
         <form method="POST" action="{{ url_for('main.quiz_submit', topic_id=topic.id) }}" id="quizForm">
+            <div class="divide-y divide-gray-100">
+                {% for q in questions %}
+                <div class="p-8 md:p-12 scroll-mt-32 hover:bg-gray-50/50 transition-colors"
+                    id="q-item-{{ loop.index }}">
+                    <div class="flex gap-6">
+                        <!-- Question Number -->
+                        <div class="flex-shrink-0">
+                            <span
+                                class="flex items-center justify-center w-8 h-8 rounded-full bg-gray-900 text-white font-bold text-sm shadow-md">
+                                {{ loop.index }}
+                            </span>
+                        </div>
 
-            {% for q in questions %}
-            <div class="glass-panel"
-                style="background: white; padding: 32px; margin-bottom: 24px; position: relative; overflow: hidden;">
-                <div style="position: absolute; top: 0; left: 0; width: 4px; height: 100%; background: var(--primary);">
+                        <!-- Question Content -->
+                        <div class="flex-grow">
+                            <h3 class="text-xl md:text-2xl font-bold text-gray-900 mb-8 leading-relaxed">
+                                {{ q.question }}
+                            </h3>
+
+                            <!-- Options Grid -->
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                                {% for option in q.options %}
+                                <label class="relative group cursor-pointer block">
+                                    <input type="radio" name="q_{{ q.id }}" value="{{ loop.index0 }}" required
+                                        class="peer sr-only"
+                                        onchange="updateProgress({{ loop.index }}, {{ questions|length }})">
+
+                                    <div
+                                        class="p-5 rounded-xl border-2 border-gray-100 bg-white hover:border-primary/30 hover:bg-primary/5 transition-all
+                                                peer-checked:border-primary peer-checked:bg-primary/5 peer-checked:shadow-sm flex items-center gap-4">
+                                        <div
+                                            class="w-6 h-6 rounded-full border-2 border-gray-300 peer-checked:border-primary peer-checked:bg-primary relative flex-shrink-0">
+                                            <div
+                                                class="absolute inset-0 m-auto w-2.5 h-2.5 rounded-full bg-white opacity-0 peer-checked:opacity-100 transform scale-0 peer-checked:scale-100 transition-all">
+                                            </div>
+                                        </div>
+                                        <span
+                                            class="text-base md:text-lg font-medium text-gray-700 peer-checked:text-gray-900">{{
+                                            option }}</span>
+                                    </div>
+                                </label>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
                 </div>
-
-                <h3 style="font-size: 18px; font-weight: 600; margin-bottom: 24px; display: flex; gap: 12px;">
-                    <span style="color: var(--gray-1);">{{ loop.index }}.</span>
-                    {{ q.question }}
-                </h3>
-
-                <div class="options-grid" style="display: grid; gap: 12px;">
-                    {% for option in q.options %}
-                    <label class="option-card"
-                        style="display: flex; align-items: center; padding: 16px; border: 1px solid var(--gray-2); border-radius: 8px; cursor: pointer; transition: all 0.2s;">
-                        <input type="radio" name="q_{{ q.id }}" value="{{ loop.index0 }}" required
-                            style="margin-right: 16px; transform: scale(1.2);">
-                        <span style="font-size: 15px;">{{ option }}</span>
-                    </label>
-                    {% endfor %}
-                </div>
+                {% endfor %}
             </div>
-            {% endfor %}
 
-            <div style="text-align: center; margin-top: 40px; padding-bottom: 60px;">
-                <button type="submit" class="btn btn-primary btn-lg"
-                    style="width: 100%; max-width: 300px; padding: 16px; font-size: 16px;">
-                    Submit Assessment <span class="material-icons">check_circle</span>
+            <!-- Footer -->
+            <div class="p-8 bg-gray-50 border-t border-gray-100 flex justify-center">
+                <button type="submit"
+                    class="btn btn-primary btn-xl px-16 shadow-lg hover:shadow-xl hover:-translate-y-0.5 transition-all rounded-xl font-bold text-lg flex items-center gap-2">
+                    Submit Assessment <span class="material-icons">arrow_forward</span>
                 </button>
             </div>
         </form>
 
     </div>
+
+    <div class="text-center mt-6 text-gray-400 text-sm">
+        &copy; CogniMentor Assessment Engine
+    </div>
+
 </div>
 
+<script>
+    function updateProgress(questionIndex, totalQuestions) {
+        // Calculate Stats
+        const answered = document.querySelectorAll('input[type="radio"]:checked').length;
+        const percent = Math.round((answered / totalQuestions) * 100);
+
+        // Update Top Bar Indicators
+        document.getElementById('answered-count-display').innerText = answered;
+        document.getElementById('linear-progress-bar').style.width = `${percent}%`;
+
+        // Update Nav Item Active State
+        const navItem = document.getElementById(`nav-${questionIndex}`);
+        if (navItem) {
+            navItem.classList.remove('text-gray-400', 'hover:bg-gray-100', 'border-gray-200');
+            navItem.classList.add('bg-primary', 'text-white', 'shadow-sm', 'border-primary');
+        }
+    }
+</script>
+
 <style>
-    .option-card:hover {
-        border-color: var(--primary);
-        background: var(--primary-light);
+    /* Hide scrollbar for nav horizontal scroll */
+    .scrollbar-hide::-webkit-scrollbar {
+        display: none;
     }
 
-    .option-card input:checked+span {
-        font-weight: 600;
-        color: var(--primary);
+    .scrollbar-hide {
+        -ms-overflow-style: none;
+        scrollbar-width: none;
     }
 
-    /* Add simple visual selection via JS or rely on browser default + CSS highlight */
-    .option-card:has(input:checked) {
-        border-color: var(--primary);
-        background: var(--primary-light);
-        box-shadow: 0 4px 12px rgba(26, 115, 232, 0.1);
+    html {
+        scroll-behavior: smooth;
+    }
+
+    /* Center the main container perfectly on the screen */
+    .main-content {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 100vh;
+        padding: 0;
+        /* Override py-8 to remove vertical padding for centering */
+        background: linear-gradient(135deg, #e0f2fe 0%, #bae6fd 50%, #7dd3fc 100%);
+        /* Educational blue gradient, like a chalkboard */
+    }
+
+    /* Outstanding 2D main container: Flat with deep shadows and premium gradients */
+    .main-content>div {
+        box-shadow: 0 25px 50px rgba(0, 0, 0, 0.15), 0 15px 35px rgba(0, 0, 0, 0.1), inset 0 1px 0 rgba(255, 255, 255, 0.2);
+        transition: box-shadow 0.4s ease, transform 0.4s ease;
+        background: linear-gradient(145deg, #ffffff 0%, #f0f9ff 100%);
+        /* Clean white to light blue */
+        border: 2px solid #dbeafe;
+        /* Subtle border for definition */
+    }
+
+    .main-content>div:hover {
+        box-shadow: 0 35px 70px rgba(0, 0, 0, 0.2), 0 20px 40px rgba(0, 0, 0, 0.15), inset 0 1px 0 rgba(255, 255, 255, 0.3);
+        transform: translateY(-5px);
+        /* Subtle lift for engagement */
+    }
+
+    /* Clean and well-aligned header with educational flair */
+    .main-content>div>div:first-child {
+        background: linear-gradient(90deg, #ffffff 0%, #f0f9ff 100%);
+        border-bottom: 2px solid #dbeafe;
+        padding: 1.5rem;
+        position: sticky;
+        top: 0;
+        z-index: 30;
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    .main-content>div>div:first-child h1 {
+        font-size: 2.5rem;
+        font-weight: 800;
+        color: #1e40af;
+        /* Deep blue for trust */
+        text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        letter-spacing: -0.02em;
+    }
+
+    /* Each question as a separate card-style box: Flat with vibrant borders and animations */
+    .main-content>div form>div>div[id^="q-item-"] {
+        background: linear-gradient(145deg, #ffffff 0%, #f8fafc 100%);
+        border-radius: 16px;
+        margin: 1.5rem;
+        padding: 2.5rem;
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08), 0 5px 15px rgba(0, 0, 0, 0.05), inset 0 1px 0 rgba(255, 255, 255, 0.6);
+        transition: all 0.3s ease;
+        border: 2px solid #e0f2fe;
+        position: relative;
+    }
+
+    .main-content>div form>div>div[id^="q-item-"]:hover {
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.12), 0 10px 20px rgba(0, 0, 0, 0.08), inset 0 1px 0 rgba(255, 255, 255, 0.8);
+        transform: translateY(-8px) scale(1.02);
+        border-color: #3b82f6;
+    }
+
+    /* Question number: Flat with gradient and shadow */
+    .main-content>div form>div>div[id^="q-item-"] .flex-shrink-0 span {
+        background: linear-gradient(145deg, #1e40af 0%, #1d4ed8 100%);
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.2);
+        transition: box-shadow 0.2s ease;
+    }
+
+    .main-content>div form>div>div[id^="q-item-"]:hover .flex-shrink-0 span {
+        box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.3);
+    }
+
+    /* Options: Flat with smooth hover and selection effects */
+    .main-content>div form>div>div[id^="q-item-"] label div {
+        transition: all 0.3s ease, transform 0.2s ease;
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+        background: linear-gradient(145deg, #ffffff 0%, #f9fafb 100%);
+    }
+
+    .main-content>div form>div>div[id^="q-item-"] label:hover div {
+        transform: translateY(-3px);
+        box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+        border-color: #3b82f6;
+        background: linear-gradient(145deg, #f0f9ff 0%, #e0f2fe 100%);
+    }
+
+    .main-content>div form>div>div[id^="q-item-"] input:checked+div {
+        background: linear-gradient(145deg, #dbeafe 0%, #bfdbfe 100%);
+        border-color: #3b82f6;
+        box-shadow: 0 4px 10px rgba(59, 130, 246, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.6);
+        transform: scale(1.02);
+    }
+
+    /* Footer button: Outstanding flat design with vibrant gradient */
+    .main-content>div form>div:last-child button {
+        background: linear-gradient(145deg, #3b82f6 0%, #1d4ed8 100%);
+        box-shadow: 0 10px 25px rgba(59, 130, 246, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.3);
+        transition: all 0.3s ease;
+        color: white;
+        font-weight: 700;
+    }
+
+    .main-content>div form>div:last-child button:hover {
+        box-shadow: 0 15px 35px rgba(59, 130, 246, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.4);
+        transform: translateY(-4px) scale(1.05);
+        background: linear-gradient(145deg, #2563eb 0%, #1e40af 100%);
+    }
+
+    /* Nav items: Flat with subtle effects */
+    .main-content>div>div:first-child a {
+        transition: all 0.3s ease, transform 0.2s ease;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    .main-content>div>div:first-child a:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+        background: #f3f4f6;
+    }
+
+    .main-content>div>div:first-child a.bg-primary {
+        background: linear-gradient(145deg, #3b82f6 0%, #1d4ed8 100%);
+        box-shadow: 0 4px 8px rgba(59, 130, 246, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.2);
     }
 </style>
 {% endblock %}
+```

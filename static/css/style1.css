@@ -262,3 +262,261 @@ ul {
     grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
     gap: 24px;
 }
+
+/* ==========================================================================
+   Auth Pages
+   ========================================================================== */
+.auth-background {
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: linear-gradient(135deg, #f6f8fb 0%, #eef2f5 100%);
+    position: relative;
+    overflow: hidden;
+    padding: 20px;
+    /* Prevent edge touching on mobile */
+}
+
+.auth-card {
+    width: 100%;
+    max-width: 500px;
+    /* Increased from default/400 */
+    padding: 50px;
+    /* Spacious padding */
+    border-radius: 24px;
+    background: rgba(255, 255, 255, 0.9);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    box-shadow: 0 24px 60px rgba(0, 0, 0, 0.12);
+    border: 1px solid rgba(255, 255, 255, 0.8);
+    position: relative;
+    z-index: 10;
+    margin: auto;
+    background-clip: padding-box;
+    /* Lint fix / Best practice */
+}
+
+.auth-background::before,
+.auth-background::after {
+    content: '';
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(80px);
+    z-index: 0;
+}
+
+.auth-background::before {
+    width: 400px;
+    height: 400px;
+    background: rgba(26, 115, 232, 0.05);
+    /* Primary Light */
+    top: -100px;
+    right: -100px;
+}
+
+.auth-background::after {
+    width: 300px;
+    height: 300px;
+    background: rgba(234, 67, 53, 0.05);
+    /* Secondary Light */
+    bottom: -50px;
+    left: -50px;
+}
+
+/* ==========================================================================
+   Focus Mode Layout (Subject Specific)
+   ========================================================================== */
+.focus-layout {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    /* If base.html sidebar is present, we might need to handle it. 
+       Ideally, for focus mode, we hide the main nav or keep it minimal. 
+       For now, this fits inside the .main-content area. */
+}
+
+.focus-header {
+    background: white;
+    padding: 20px 30px;
+}
+
+.header-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.subject-info {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+.subject-icon-wrapper {
+    width: 60px;
+    height: 60px;
+    background: var(--primary-light);
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--primary);
+}
+
+.subject-icon-wrapper .material-icons {
+    font-size: 32px;
+}
+
+.subject-info h1 {
+    font-size: 24px;
+    margin-bottom: 5px;
+}
+
+.progress-mini {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 14px;
+    color: var(--gray-1);
+}
+
+.progress-bar-mini {
+    width: 100px;
+    height: 6px;
+    background: var(--gray-2);
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+.progress-fill-mini {
+    height: 100%;
+    background: var(--success);
+    border-radius: 10px;
+}
+
+
+
+/* Focus Layout Breakout */
+.focus-layout {
+    margin: -30px;
+    width: calc(100% + 60px);
+    min-height: 100vh;
+}
+
+
+
+.focus-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    /* Two Halves Split */
+    gap: 20px;
+    align-items: stretch;
+    width: 100%;
+}
+
+.focus-main {
+    background: white;
+    padding: 40px 60px;
+    min-height: 800px;
+    border-radius: 0;
+    box-shadow: none;
+    /* Removed border-right */
+}
+
+.focus-sidebar {
+    background: var(--bg-light);
+    padding: 20px;
+    position: sticky;
+    top: 0;
+    height: calc(100vh - 80px);
+    border-radius: 0;
+    box-shadow: none;
+    border-right: 1px solid var(--gray-2);
+    /* Added separator */
+    order: -1;
+    /* Visual reordering if HTML isn't changed yet, but I will change HTML too */
+}
+
+.syllabus-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    padding-bottom: 15px;
+    border-bottom: 1px solid var(--gray-2);
+}
+
+.syllabus-tree {
+    overflow-y: auto;
+    flex: 1;
+    padding-right: 5px;
+}
+
+.syllabus-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px;
+    border-radius: 8px;
+    transition: all 0.2s;
+    margin-bottom: 4px;
+    border: 1px solid transparent;
+}
+
+.syllabus-item:hover {
+    background: var(--gray-3);
+}
+
+.syllabus-item.active {
+    background: var(--primary-light);
+    border-color: rgba(26, 115, 232, 0.2);
+}
+
+.syllabus-item.locked {
+    opacity: 0.6;
+    pointer-events: none;
+}
+
+.item-status .material-icons {
+    font-size: 20px;
+}
+
+.item-status .check {
+    color: var(--success);
+}
+
+.item-status .current {
+    color: var(--primary);
+}
+
+.item-status .lock {
+    color: var(--gray-2);
+}
+
+.item-link {
+    font-weight: 500;
+    font-size: 14px;
+    color: var(--dark);
+    display: block;
+    width: 100%;
+}
+
+.syllabus-item.active .item-link {
+    color: var(--primary);
+    font-weight: 600;
+}
+
+/* Custom Scrollbar for Syllabus */
+.custom-scrollbar::-webkit-scrollbar {
+    width: 6px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+    background: var(--gray-2);
+    border-radius: 10px;
+}

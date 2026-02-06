@@ -2,32 +2,34 @@
 {% block title %}Your Roadmap{% endblock %}
 
 {% block content %}
-<link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}">
-<div class="dashboard-container">
-    <aside class="sidebar">
-        <a href="{{ url_for('main.index') }}" class="sidebar-link">
-            <span class="material-icons">dashboard</span> Dashboard
-        </a>
-        <a href="{{ url_for('advisor.start') }}" class="sidebar-link">
-            <span class="material-icons">restart_alt</span> Create New Plan
-        </a>
-    </aside>
+<div class="main-content">
+    <div style="max-width: 800px; margin: 0 auto;">
 
-    <main class="dashboard-content" style="background: white;">
-        <div class="roadmap-header">
-            {{ roadmap.intro|safe }}
+        <!-- Header -->
+        <div class="glass-panel p-6 mb-8 border-l-4 border-primary">
+            <h2 class="text-2xl font-bold text-primary mb-4">Your Personalized Roadmap</h2>
+            <div class="text-muted leading-relaxed">
+                {{ roadmap.intro|safe }}
+            </div>
         </div>
 
-        <div class="timeline">
+        <!-- Timeline -->
+        <div class="timeline-container">
             {% for week in roadmap.weeks %}
-            <div class="timeline-item">
-                <div class="timeline-marker"></div>
+            <div class="timeline-item active">
+                <div class="timeline-icon">
+                    <span class="material-icons text-primary">event_note</span>
+                </div>
                 <div class="timeline-content">
-                    <h3>{{ week.title }}</h3>
-                    <p>{{ week.desc }}</p>
-                    <ul class="task-list">
+                    <h3 class="text-lg font-bold text-main mb-2">{{ week.title }}</h3>
+                    <p class="text-muted mb-4">{{ week.desc }}</p>
+
+                    <ul class="flex flex-col gap-2">
                         {% for task in week.tasks %}
-                        <li><span class="material-icons">check_circle_outline</span> {{ task }}</li>
+                        <li class="flex items-center gap-2 text-sm text-main">
+                            <span class="material-icons text-success" style="font-size: 18px;">check_circle</span>
+                            {{ task }}
+                        </li>
                         {% endfor %}
                     </ul>
                 </div>
@@ -35,88 +37,15 @@
             {% endfor %}
         </div>
 
-        <div class="roadmap-actions">
-            <h3>Ready to start?</h3>
-            <p>We recommend starting with the foundational module in our library.</p>
-            <a href="{{ url_for('main.index') }}" class="btn btn-lg">Go to Dashboard</a>
+        <!-- Actions -->
+        <div class="text-center mt-12 pt-8 border-t border-light">
+            <h3 class="text-xl font-bold mb-2">Ready to start?</h3>
+            <p class="text-muted mb-6">Dive into your first module in the dashboard.</p>
+            <a href="{{ url_for('main.index') }}" class="btn btn-lg btn-primary">
+                <span class="material-icons">dashboard</span> Go to Dashboard
+            </a>
         </div>
-    </main>
+
+    </div>
 </div>
-
-<style>
-    .roadmap-header {
-        background: #f8f9fa;
-        padding: 30px;
-        border-radius: 12px;
-        margin-bottom: 40px;
-        border-left: 5px solid #1a73e8;
-    }
-
-    .timeline {
-        position: relative;
-        max-width: 800px;
-        margin: 0 auto;
-        padding: 20px 0;
-    }
-
-    .timeline::before {
-        content: '';
-        position: absolute;
-        left: 20px;
-        top: 0;
-        bottom: 0;
-        width: 2px;
-        background: #e0e0e0;
-    }
-
-    .timeline-item {
-        position: relative;
-        margin-bottom: 40px;
-        padding-left: 60px;
-    }
-
-    .timeline-marker {
-        position: absolute;
-        left: 11px;
-        top: 0;
-        width: 20px;
-        height: 20px;
-        background: #fff;
-        border: 4px solid #1a73e8;
-        border-radius: 50%;
-        z-index: 1;
-    }
-
-    .timeline-content h3 {
-        margin-top: 0;
-        color: #1a73e8;
-    }
-
-    .task-list {
-        list-style: none;
-        padding: 0;
-        margin-top: 15px;
-    }
-
-    .task-list li {
-        display: flex;
-        align-items: center;
-        margin-bottom: 10px;
-        font-size: 15px;
-        color: #3c4043;
-    }
-
-    .task-list li .material-icons {
-        margin-right: 10px;
-        color: #34a853;
-        font-size: 20px;
-    }
-
-    .roadmap-actions {
-        text-align: center;
-        margin-top: 60px;
-        padding-top: 40px;
-        border-top: 1px solid #eee;
-    }
-</style>
 {% endblock %}

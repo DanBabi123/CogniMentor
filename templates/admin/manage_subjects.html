@@ -1,0 +1,113 @@
+{% extends "base.html" %}
+{% block title %}Manage Subjects - Admin{% endblock %}
+
+{% block content %}
+<div class="main-content bg-gradient-hero flex-col min-h-screen">
+
+    <header class="mb-8 flex-between">
+        <div>
+            <h1 class="page-title justify-start">Content Manager</h1>
+            <p class="text-muted">Manage your platform's subjects and detailed curriculum.</p>
+        </div>
+        <a href="{{ url_for('admin.dashboard') }}" class="btn btn-outline">
+            <span class="material-icons">arrow_back</span> Back to Dashboard
+        </a>
+    </header>
+
+    <div class="flex flex-col lg:flex-row gap-8">
+
+        <!-- Add New Subject Form -->
+        <div class="glass-panel flex-1 min-w-[350px] self-start">
+            <h2 class="section-title text-xl mb-6 flex items-center gap-2">
+                <span class="material-icons text-primary">add_circle</span> Add New Subject
+            </h2>
+
+            <form method="POST" action="{{ url_for('admin.manage_subjects') }}">
+                <div class="form-group">
+                    <label class="form-label">Subject Name</label>
+                    <input type="text" name="name" class="form-control" placeholder="e.g. Advanced Machine Learning"
+                        required>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Category</label>
+                    <select name="category" class="select" required>
+                        <option value="" disabled selected>Select Category...</option>
+                        <option value="Tech">Technology & Code</option>
+                        <option value="Govt">Government Exams</option>
+                        <option value="GATE">GATE / Engineering</option>
+                        <option value="Business">Business & Management</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Icon (Material Icon Name)</label>
+                    <input type="text" name="icon" class="form-control" placeholder="e.g. school, code, psychology"
+                        value="school">
+                    <small class="text-muted text-xs mt-1 block">
+                        Choose an icon from <a href="https://fonts.google.com/icons" target="_blank"
+                            class="text-primary hover:underline">Material Icons</a>
+                    </small>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Description</label>
+                    <textarea name="description" class="textarea" rows="3"
+                        placeholder="Brief overview of the subject..."></textarea>
+                </div>
+
+                <button type="submit" class="btn btn-primary w-full justify-center">
+                    <span class="material-icons">save</span> Create Subject
+                </button>
+            </form>
+        </div>
+
+        <!-- Subject List -->
+        <div class="flex-[2] min-w-[500px]">
+            <h2 class="section-title text-xl mb-6">Existing Subjects</h2>
+
+            <div class="glass-panel p-0 overflow-hidden">
+                <table class="w-full border-collapse">
+                    <thead class="bg-gray-50 border-b border-gray-200">
+                        <tr>
+                            <th class="p-4 text-left font-semibold text-muted text-sm">Name</th>
+                            <th class="p-4 text-left font-semibold text-muted text-sm">Category</th>
+                            <th class="p-4 text-right font-semibold text-muted text-sm">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-gray-100">
+                        {% for subject in subjects %}
+                        <tr class="hover:bg-gray-50 transition-colors">
+                            <td class="p-4 flex items-center gap-3">
+                                <span class="material-icons text-primary bg-primary-light p-2 rounded-lg text-xl">
+                                    {{ subject.icon }}
+                                </span>
+                                <div>
+                                    <div class="font-bold text-main">{{ subject.name }}</div>
+                                    <div class="text-xs text-muted">{{ (subject.description or '')[:50] }}...</div>
+                                </div>
+                            </td>
+                            <td class="p-4">
+                                <span class="badge badge-gray">
+                                    {{ subject.category }}
+                                </span>
+                            </td>
+                            <td class="p-4 text-right">
+                                <form action="{{ url_for('admin.delete_subject', subject_id=subject.id) }}"
+                                    method="POST" class="inline-block"
+                                    onsubmit="return confirm('Are you sure? This will delete all topics and quizzes for this subject.');">
+                                    <button type="submit" class="btn-icon text-danger hover:bg-red-50">
+                                        <span class="material-icons">delete</span>
+                                    </button>
+                                </form>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+    </div>
+</div>
+{% endblock %}

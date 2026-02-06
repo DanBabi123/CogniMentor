@@ -1,81 +1,35 @@
 {% extends "base.html" %}
-{% block title %}Learning Advisor{% endblock %}
+{% block title %}Learning Advisor | CogniMentor{% endblock %}
 
 {% block content %}
-<link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}">
-<div class="advisor-container animate-fade-up">
-    <div class="wizard-header">
-        <h2>AI Learning Advisor</h2>
-        <p>Tell us what you want to learn, and we'll create the perfect path.</p>
+<div class="main-content bg-gradient-hero flex-center flex-col min-h-screen">
+    <div class="glass-panel p-6" style="max-width: 800px; margin: 0 auto;">
+        <div class="wizard-header text-center mb-6">
+            <h2 class="section-title flex-center gap-2">
+                <span class="material-icons text-primary">smart_toy</span>
+                AI Learning Advisor
+            </h2>
+            <p class="text-muted">Tell us what you want to learn, and we'll create the perfect path.</p>
+        </div>
+
+        <form action="{{ url_for('advisor.assess') }}" method="POST">
+            <div class="subject-grid">
+                {% for subject in subjects %}
+                <label class="subject-card">
+                    <input type="radio" name="subject" value="{{ subject }}" required>
+                    <div class="card-content">
+                        <span class="material-icons">school</span>
+                        <span style="text-align: center;">{{ subject }}</span>
+                    </div>
+                </label>
+                {% endfor %}
+            </div>
+
+            <div class="mt-6 text-right">
+                <button type="submit" class="btn btn-primary btn-lg">Next Step <span
+                        class="material-icons">arrow_forward</span></button>
+            </div>
+        </form>
     </div>
-
-    <form action="{{ url_for('advisor.assess') }}" method="POST">
-        <div class="subject-grid">
-            {% for subject in subjects %}
-            <label class="subject-card">
-                <input type="radio" name="subject" value="{{ subject }}" required>
-                <div class="card-content">
-                    <span class="material-icons">school</span>
-                    <span>{{ subject }}</span>
-                </div>
-            </label>
-            {% endfor %}
-        </div>
-
-        <div style="margin-top: 30px; text-align: right;">
-            <button type="submit" class="btn btn-primary btn-lg">Next Step <span
-                    class="material-icons">arrow_forward</span></button>
-        </div>
-    </form>
 </div>
-
-<style>
-    .wizard-header {
-        text-align: center;
-        margin-bottom: 40px;
-    }
-
-    .subject-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-        gap: 20px;
-    }
-
-    .subject-card input {
-        display: none;
-    }
-
-    .subject-card .card-content {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-        padding: 30px;
-        border: 2px solid #e0e0e0;
-        border-radius: 12px;
-        cursor: pointer;
-        transition: all 0.2s;
-        height: 100px;
-    }
-
-    .subject-card input:checked+.card-content {
-        border-color: #1a73e8;
-        background: #e8f0fe;
-        color: #1a73e8;
-    }
-
-    .subject-card:hover .card-content {
-        border-color: #1a73e8;
-    }
-
-    .subject-card .material-icons {
-        font-size: 32px;
-        margin-bottom: 10px;
-        color: #5f6368;
-    }
-
-    .subject-card input:checked+.card-content .material-icons {
-        color: #1a73e8;
-    }
-</style>
 {% endblock %}

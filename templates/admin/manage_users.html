@@ -3,61 +3,78 @@
 {% block title %}Manage Users{% endblock %}
 
 {% block content %}
-<link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}">
-
-<div class="dashboard-main">
-    <header class="section-header">
+<div class="main-content bg-gradient-hero flex-col min-h-screen">
+    <header class="mb-8 text-center">
         <h2 class="page-title">Manage Users</h2>
-        <p class="page-subtitle">View and manage platform users</p>
+        <p class="text-muted">View, audit, and manage platform users.</p>
     </header>
 
-    <div class="glass-panel" style="overflow-x: auto;">
-        <table style="width: 100%; border-collapse: collapse;">
-            <thead>
-                <tr style="text-align: left; border-bottom: 2px solid var(--border-color);">
-                    <th style="padding: 12px; color: var(--text-secondary);">ID</th>
-                    <th style="padding: 12px; color: var(--text-secondary);">Name</th>
-                    <th style="padding: 12px; color: var(--text-secondary);">Email</th>
-                    <th style="padding: 12px; color: var(--text-secondary);">Role</th>
-                    <th style="padding: 12px; color: var(--text-secondary);">Status</th>
-                    <th style="padding: 12px; color: var(--text-secondary);">Actions</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for user in users %}
-                <tr style="border-bottom: 1px solid var(--border-color);">
-                    <td style="padding: 12px;">{{ user.id }}</td>
-                    <td style="padding: 12px; font-weight: 500;">
-                        <div style="display: flex; align-items: center;">
-                            {% if user.profile_pic %}
-                            <img src="{{ url_for('static', filename='profile_pics/'+user.profile_pic) }}"
-                                style="width: 24px; height: 24px; border-radius: 50%; margin-right: 8px;">
+    <div class="glass-panel overflow-hidden p-0">
+        <div class="overflow-x-auto">
+            <table class="w-full border-collapse">
+                <thead class="bg-gray-50 border-b border-gray-200">
+                    <tr>
+                        <th class="p-4 text-left font-semibold text-muted text-sm uppercase">ID</th>
+                        <th class="p-4 text-left font-semibold text-muted text-sm uppercase">User</th>
+                        <th class="p-4 text-left font-semibold text-muted text-sm uppercase">Email</th>
+                        <th class="p-4 text-left font-semibold text-muted text-sm uppercase">Role</th>
+                        <th class="p-4 text-left font-semibold text-muted text-sm uppercase">Status</th>
+                        <th class="p-4 text-left font-semibold text-muted text-sm uppercase">Actions</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-gray-100">
+                    {% for user in users %}
+                    <tr class="hover:bg-gray-50 transition-colors">
+                        <td class="p-4 text-sm text-muted">#{{ user.id }}</td>
+                        <td class="p-4 font-medium text-main">
+                            <div class="flex items-center gap-3">
+                                {% if user.profile_pic %}
+                                <img src="{{ url_for('static', filename='profile_pics/'+user.profile_pic) }}"
+                                    class="w-8 h-8 rounded-full object-cover border border-gray-200">
+                                {% else %}
+                                <div
+                                    class="w-8 h-8 rounded-full bg-primary-light text-primary flex-center font-bold text-xs">
+                                    {{ (user.name or 'U')[:2].upper() }}
+                                </div>
+                                {% endif %}
+                                {{ user.name }}
+                            </div>
+                        </td>
+                        <td class="p-4 text-sm">{{ user.email }}</td>
+                        <td class="p-4">
+                            <span class="badge {% if user.role == 'admin' %}badge-blue{% else %}badge-gray{% endif %}">
+                                {{ user.role }}
+                            </span>
+                        </td>
+                        <td class="p-4">
+                            {% if user.is_verified %}
+                            <span class="text-success text-sm flex items-center gap-1">
+                                <span class="material-icons text-xs">verified</span> Verified
+                            </span>
+                            {% else %}
+                            <span class="text-warning text-sm flex items-center gap-1">
+                                <span class="material-icons text-xs">pending</span> Pending
+                            </span>
                             {% endif %}
-                            {{ user.name }}
-                        </div>
-                    </td>
-                    <td style="padding: 12px;">{{ user.email }}</td>
-                    <td style="padding: 12px;">
-                        <span
-                            style="padding: 4px 8px; border-radius: 12px; font-size: 12px; 
-                            background: {% if user.role == 'admin' %}#e8f0fe; color: #1967d2{% else %}#f1f3f4; color: #5f6368{% endif %};">
-                            {{ user.role }}
-                        </span>
-                    </td>
-                    <td style="padding: 12px;">
-                        {% if user.is_verified %}
-                        <span style="color: var(--success); font-size: 14px;">● Verified</span>
-                        {% else %}
-                        <span style="color: var(--warning); font-size: 14px;">● Pending</span>
-                        {% endif %}
-                    </td>
-                    <td style="padding: 12px;">
-                        <button class="btn-icon" style="color: var(--primary);">edit</button>
-                    </td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
+                        </td>
+                        <td class="p-4">
+                            {% if user.id != current_user.id %}
+                            <form action="{{ url_for('admin.delete_user', user_id=user.id) }}" method="POST"
+                                class="inline-block"
+                                onsubmit="return confirm('Are you sure you want to permanently delete this user?');">
+                                <button type="submit" class="btn-icon text-danger hover:bg-red-50" title="Delete User">
+                                    <span class="material-icons">delete</span>
+                                </button>
+                            </form>
+                            {% else %}
+                            <span class="text-muted text-xs italic">(You)</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
     </div>
 </div>
 {% endblock %}

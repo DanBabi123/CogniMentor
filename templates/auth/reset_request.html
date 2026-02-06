@@ -1,21 +1,47 @@
 {% extends "base.html" %}
-{% block title %}Reset Password Request{% endblock %}
+{% block title %}Reset Password - CogniMentor{% endblock %}
 
 {% block content %}
-<div class="auth-container">
-    <div class="auth-card">
-        <h2>Forgot Password?</h2>
-        <p>Enter your email to receive a reset token.</p>
+<div class="auth-wrapper">
+    <!-- Decorative Blobs -->
+    <div class="auth-blob blob-1"></div>
+    <div class="auth-blob blob-2"></div>
+
+    <div class="auth-card glass-panel animate-fade-up">
+        <div class="text-center mb-4">
+            <div class="nav-brand justify-center mb-2">
+                <span class="material-icons text-primary" style="font-size: 32px;">lock_reset</span>
+                <span
+                    style="font-size: 24px; font-weight: 700; background: var(--gradient-primary); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;">CogniMentor</span>
+            </div>
+            <h2 class="section-title justify-center" style="font-size: 24px;">Forgot Password?</h2>
+            <p class="text-muted" style="font-size: 15px;">
+                Enter your email address and we'll send you a link to reset your password.
+            </p>
+        </div>
+
         <form method="POST">
             {{ form.hidden_tag() }}
+
             <div class="form-group">
-                {{ form.email.label }}
-                {{ form.email(class="form-control", placeholder="Enter your email") }}
+                <label class="form-label">Email Address</label>
+                <div style="position: relative;">
+                    <span class="material-icons"
+                        style="position: absolute; left: 16px; top: 50%; transform: translateY(-50%); color: var(--text-muted);">email</span>
+                    {{ form.email(class="form-control", placeholder="name@example.com", style="padding-left: 48px;") }}
+                </div>
             </div>
-            <button type="submit" class="btn btn-full">Send Reset Link</button>
+
+            <button type="submit" class="btn btn-primary w-full" style="padding: 14px; font-size: 16px;">
+                Send Reset Link <span class="material-icons" style="font-size: 18px;">send</span>
+            </button>
         </form>
-        <div class="auth-links">
-            <a href="{{ url_for('auth.login') }}">Back to Login</a>
+
+        <div class="text-center" style="margin-top: 24px;">
+            <a href="{{ url_for('auth.login') }}"
+                style="color: var(--text-muted); font-weight: 500; font-size: 14px; display: inline-flex; align-items: center; gap: 6px; text-decoration: none;">
+                <span class="material-icons" style="font-size: 16px;">arrow_back</span> Back to Login
+            </a>
         </div>
     </div>
 </div>

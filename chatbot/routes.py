@@ -1,5 +1,5 @@
-from flask import request, jsonify
-from flask_login import current_user
+from flask import request, jsonify, render_template
+from flask_login import current_user, login_required
 from . import chatbot
 from ai_engine.chatbot import chatbot_engine
 
@@ -19,3 +19,8 @@ def ask():
     response = chatbot_engine.process_message(message, user_context)
     
     return jsonify({'response': response})
+
+@chatbot.route('/chat')
+@login_required
+def chat_ui():
+    return render_template('chatbot/index.html')

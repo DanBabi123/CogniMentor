@@ -1,0 +1,97 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="focus-layout">
+
+    <!-- 1. TOP NAVBAR (Performance Metrics) -->
+    <header class="dashboard-navbar glass-panel animate-fade-in">
+        <div class="navbar-content">
+            <div class="subject-info">
+                <div class="subject-icon-wrapper small">
+                    <span class="material-icons">{{ current_subject.icon }}</span>
+                </div>
+                <div>
+                    <div class="d-flex align-center gap-2">
+                        <h1 style="font-size: 1.2rem; font-weight: 700;">{{ current_subject.name }}</h1>
+                        <span class="badge badge-primary">Your Performance</span>
+                    </div>
+                    <div class="progress-mini">
+                        <div class="progress-bar-mini">
+                            <div class="progress-fill-mini" style="width: {{ stats.overall_progress }}%"></div>
+                        </div>
+                        <span>{{ stats.overall_progress }}% Completed</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="navbar-actions">
+                <a href="{{ url_for('main.my_subjects') }}" class="btn btn-sm btn-secondary">
+                    <span class="material-icons" style="font-size: 16px;">arrow_back</span> Switch Subject
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <div class="focus-grid">
+
+        <main class="focus-main animate-fade-in">
+            {% block focus_content %}
+            <!-- Dashboard or Topic Content goes here -->
+            {% endblock %}
+        </main>
+
+        <aside class="focus-sidebar">
+            <div class="syllabus-header">
+                <h3>Course Syllabus</h3>
+                <span class="badge badge-gray">{{ stats.completed_count }}/{{ stats.total_count }} Done</span>
+            </div>
+
+            <div class="syllabus-tree custom-scrollbar">
+                {% for topic in all_topics %}
+                <div
+                    class="syllabus-item {% if topic.id in stats.completed_topic_ids %}completed{% elif topic.id == current_active_topic.id %}active{% elif topic.id not in stats.completed_topic_ids and topic.order_index > current_active_topic.order_index %}locked{% endif %}">
+                    <div class="item-status">
+                        {% if topic.id in stats.completed_topic_ids %}
+                        <span class="material-icons text-success">check_circle</span>
+                        {% elif topic.id == current_active_topic.id %}
+                        <span class="material-icons text-primary">play_circle</span>
+                        {% else %}
+                        <span class="material-icons">lock</span>
+                        {% endif %}
+                    </div>
+                    <div class="item-info d-flex justify-between align-center w-full">
+                        <a href="{{ url_for('main.topic_view', topic_id=topic.id) }}" class="item-link"
+                            style="text-decoration: none; color: inherit; flex: 1;">
+                            {{ topic.title }}
+                        </a>
+                        <a href="{{ url_for('main.quiz_view', topic_id=topic.id) }}"
+                            class="badge badge-primary hover-shadow d-flex align-center gap-1"
+                            style="text-decoration: none; padding: 4px 12px; height: auto; border-radius: 12px;"
+                            title="Take Quiz">
+                            <span class="material-icons" style="font-size: 14px;">quiz</span>
+                            <span>Quiz</span>
+                        </a>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </aside>
+    </div>
+</div>
+
+<style>
+    /* Local scrollbar override if needed, otherwise use global */
+    .custom-scrollbar::-webkit-scrollbar {
+        width: 6px;
+    }
+
+    .custom-scrollbar::-webkit-scrollbar-track {
+        background: transparent;
+    }
+
+    .custom-scrollbar::-webkit-scrollbar-thumb {
+        background: var(--border-medium);
+        border-radius: 10px;
+    }
+</style>
+{% endblock %}

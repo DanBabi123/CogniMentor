@@ -18,7 +18,7 @@ class AIContentGenerator:
         self.genai_client = None
         
         # Models
-        self.model_content = "gemini-3-flash-preview"
+        self.model_content = "gemini-1.5-flash"
         self.model_quiz = "google/flan-t5-base"
         self.model_lesson = "stabilityai/stablelm-zephyr-3b"
         
@@ -94,71 +94,82 @@ class AIContentGenerator:
         debug_msg = f" <br><small style='color:red'>Error: {error_info}</small>" if error_info else ""
         return f"<p>AI Service Unavailable. Loaded static content for {topic} ({mode}).{debug_msg}</p>"
 
-    def generate_quiz(self, topic_title, difficulty_distribution=None):
+    def generate_quiz(self, topic, difficulty_distribution=None):
         """
-        Generates a dynamic quiz using Flan-T5 Base (HF Text Generation).
+        Generates a quiz using Gemini 1.5 Flash in strict JSON mode.
         """
         self._configure_clients()
-        if not self.hf_client:
-            return self._fallback_quiz(topic_title)
+        
+        # Fallback if Gemini not configured
+        if not self.gemini_configured:
+             return self._fallback_quiz(topic)
 
-        if not difficulty_distribution:
-            difficulty_distribution = {'Easy': 1, 'Medium': 3, 'Hard': 1}
-
-        dist_str = ", ".join([f"{v} {k}" for k, v in difficulty_distribution.items() if v > 0])
-        total_questions = sum(difficulty_distribution.values())
-
+        # Distribute based on simplified 'Easy', 'Medium', 'Hard' if distribution provided
+        # Or simple 'adaptive' prompt if not. The user prompt uses score to decide difficulty.
+        # But here we might be calling it directly. Let's assume 'Medium' if usage is generic.
+        
         try:
             prompt = f"""
-            Generate a JSON array of {total_questions} multiple-choice questions about '{topic_title}'.
-            Difficulty mix: {dist_str}.
+            You are an expert quiz generator for {topic}.
+            Generate 10 multiple-choice questions.
             
-            Format: [{{ 
-                "id": 1, 
-                "question": "...", 
-                "options": ["A", "B", "C", "D"], 
-                "correct": 0,
-                "difficulty": "Easy" 
-            }}]
+            Format (JSON Array):
+            [
+                {{
+                  "id": 1,
+                  "question": "...",
+                  "options": ["A", "B", "C", "D"],
+                  "correct": 0,
+                  "difficulty": "Medium",
+                  "explanation": "..."
+                }}
+            ]
             
-            Ensure 'correct' is the index (0-3) of the right answer. 
-            Ensure 'difficulty' matches the requested mix.
-            Output ONLY raw JSON. No markdown.
+            Rules:
+            - 4 Options per question.
+            - Correct index 0-3.
+            - Include short explanation.
+            - Difficulty mix: Follow logical progression (Easy -> Hard).
             """
             
-            # Flan-T5 uses text_generation
-            response = self.hf_client.text_generation(
-                prompt=prompt,
-                model=self.model_quiz,
-                max_new_tokens=1500
+            model = genai.GenerativeModel(
+                self.model_content,
+                system_instruction="Output valid JSON array of 10 questions.",
+                generation_config={"response_mime_type": "application/json"}
             )
-
-            text = response.strip()
-            if text.startswith('```json'):
-                text = text.replace('```json', '').replace('```', '')
             
-            return json.loads(text)
+            response = model.generate_content(prompt)
+            return json.loads(response.text)
+
         except Exception as e:
-            print(f"HF Error (Quiz): {e}")
-            return self._fallback_quiz(topic_title)
+            print(f"GenAI Quiz Error: {e}")
+            return self._fallback_quiz(topic)
 
     def _fallback_quiz(self, topic_title):
-        return [
-            {
-                "id": 1,
-                "question": f"What is the core concept of {topic_title}?",
-                "options": ["Efficiency", "Speed", "Complexity", "All of the above"],
-                "correct": 3,
-                "difficulty": "Easy"
-            },
-            {
-                "id": 2,
-                "question": f"How do you apply {topic_title} in practice?",
-                "options": ["Option A", "Option B", "Option C", "Option D"],
-                "correct": 0,
-                "difficulty": "Medium"
-            }
+        """Return 10 static questions as fail-safe"""
+        base_questions = [
+            ("Core Concept", "What is the primary function of {}?", ["Optimization", "Execution", "Storage", "Processing"], 3, "Easy"),
+            ("Application", "When should you use {}?", ["Never", "Always", "Specific cases", "Randomly"], 2, "Easy"),
+            ("Syntax", "Which syntax is correct for {}?", ["Option A", "Option B", "Option C", "Option D"], 0, "Medium"),
+            ("Debugging", "How do you debug {}?", ["Logs", "Guessing", "Ignoring", "Reboot"], 0, "Medium"),
+            ("Performance", "Does {} affect performance?", ["Yes", "No", "Maybe", "Only on Tuesday"], 0, "Medium"),
+            ("Security", "Is {} secure by default?", ["Yes", "No", "Depends on config", "Always"], 2, "Hard"),
+            ("Advanced", "What is an advanced feature of {}?", ["Feature X", "Feature Y", "Feature Z", "None"], 0, "Hard"),
+            ("History", "Who created {}?", ["Dev A", "Dev B", "Community", "Unknown"], 2, "Medium"),
+            ("Comparison", "How does {} compare to alternatives?", ["Better", "Worse", "Different", "Same"], 2, "Hard"),
+            ("Future", "What is the future of {}?", ["Growth", "Decline", "Stable", "Unknown"], 0, "Easy")
         ]
+        
+        quiz = []
+        for i, (cat, q_structure, opts, corr, diff) in enumerate(base_questions, 1):
+             quiz.append({
+                "id": i,
+                "question": q_structure.format(topic_title),
+                "options": opts,
+                "correct": corr,
+                "difficulty": diff
+             })
+        return quiz
 
     def generate_feedback(self, score, max_score, topic_title):
         percentage = (score / max_score) * 100
@@ -171,195 +182,121 @@ class AIContentGenerator:
 
     def generate_lesson_module(self, subject, topic, user_level='beginner', previous_score=0):
         """
-        Generates a complete lesson module using Zephyr 3B (HF Chat Completion).
+        Generates a complete lesson module using Google Gemini (via official SDK).
+        Follows the strict 'W3Schools + Adaptive AI' system prompt.
         """
         self._configure_clients()
-        if not self.hf_client:
-            return self._fallback_lesson(subject, topic)
+        
+        # Fallback if Gemini not configured
+        if not self.gemini_configured:
+             return self._fallback_lesson(subject, topic)
 
         try:
             system_prompt = f"""
-            You are COGNIMENTOR, an industry-grade AI learning engine designed like W3Schools + an Adaptive AI Tutor.
+            You are COGNIMENTOR, a world-class technical educator known for EXTREMELY DETAILED, DEEP-DIVE content (like a premium textbook or detailed documentation).
 
             Your goal:
-            - Teach complete subjects with a fixed curriculum
-            - Generate content dynamically per topic
-            - Generate random quizzes automatically
-            - Maintain consistency, depth, and clarity
+            - Create comprehensive, long-form lessons (think 15-minute read time).
+            - Go BEYOND basics -> explain "HOW it works under the hood".
+            - Use a friendly but professional tone.
 
             ==================================================
-            SUBJECTS TO COVER (STRICT)
+            CONTENT STRUCTURE (STRICT)
             ==================================================
+            For the subject "{subject}" and topic "{topic}":
 
-            1. Python
-            2. Data Structures & Algorithms (DSA)
-            3. GATE CSE / IT (Core CS)
-            4. Aptitude & Reasoning
-            5. Artificial Intelligence (AI & ML)
+            1. **Introduction & Real-World Context**
+               - Define the concept clearly.
+               - Explain WHY it exists and WHAT problem it solves.
+               - Give a relatable real-world analogy (e.g., "Think of a Library...").
+
+            2. **Deep Dive: The Mechanics (The "How")**
+               - Don't just show syntax. Explain the internal logic.
+               - If coding: Memory management, complexity, or interpreter steps.
+               - If theory: proven theorems or historical context.
+               - Use Diagrams (via ASCII/Mermaid if simple) or clear descriptors.
+
+            3. **Step-by-Step Implementation / Solution**
+               - Provide a COMPLETE code example or solved problem.
+               - Comment EVERY line of code.
+               - Show expected output.
+               - "Walk through" the execution flow.
+
+            4. **Advanced Edge Cases & Best Practices**
+               - What happens if inputs are null? Large data?
+               - How do pros use this in production?
+               - Common "Gotchas" and how to debug them.
+
+            5. **Interactive Challenge**
+               - Pose a thought-provoking question to the student.
+               - Provide a "hidden" answer (using <details><summary>Check Answer</summary>...).
+
+            6. **Summary & Key Takeaways**
+               - Bullet points of the most critical concepts.
 
             ==================================================
-            CURRICULUM RULES (IMPORTANT)
+            FORMATTING RULES
             ==================================================
-
-            - Each subject has a PREDEFINED, STABLE syllabus
-            - DO NOT invent or remove core topics
-            - Topic order must be fundamentals -> advanced
-            - Treat syllabus like W3Schools (static structure)
-
-            ==================================================
-            TOPIC SELECTION LOGIC
-            ==================================================
-
-            INPUT PROVIDED:
-            - subject: {subject}
-            - selected_topic: {topic}
-            - user_level: {user_level} (beginner / intermediate / advanced)
-            - previous_score: {previous_score} (0-100)
-
-            You MUST:
-            - Generate content ONLY for selected_topic
-            - Assume topic structure already exists in UI
-
-            ==================================================
-            CONTENT GENERATION RULES
-            ==================================================
-
-            For the given subject + topic:
-
-            1. Explain in very simple, beginner-friendly language
-            2. Use real-world analogies
-            3. Provide clear syntax / formula / logic blocks
-            4. Give 2-3 worked examples
-            - For coding -> show output
-            - For aptitude -> step-by-step solution
-            5. Add a "Common Mistakes" section
-            6. End with a short summary
-            7. Format everything in CLEAN, UI-READY HTML
-            - No markdown
-            - No emojis
-            - Proper headings and sections
+            - Use <h3>, <h4> for headers.
+            - Use <div class="note"> for key notes.
+            - Use <div class="warning"> for pitfalls.
+            - Use <pre><code> for all code.
+            - **LENGTH**: The content of 'topic_content' MUST be significant (at least 800 words). Do not be brief.
 
             ==================================================
             QUIZ GENERATION RULES (AUTO & RANDOM)
             ==================================================
-
-            1. Decide difficulty automatically:
-            - score < 40 -> EASY
-            - 40-70 -> MEDIUM
-            - >70 -> HARD
-
-            2. Generate 5 MULTIPLE-CHOICE questions:
-            - Questions must be RANDOM every time
-            - No repetition across attempts
-            - Difficulty must match level
-
-            3. Subject-wise quiz logic:
-            - Python / DSA / AI -> code & logic based
-            - GATE CSE / IT -> concept + theory + numericals
-            - Aptitude / Reasoning -> calculation + logic puzzles
-
-            4. Each question MUST include:
-            - Question text
-            - 4 options
-            - One correct answer
-            - Short explanation
-
-            ==================================================
-            ADAPTIVE LEARNING LOGIC
-            ==================================================
-
-            - If score < 40:
-            -> repeat same topic with simpler explanation
-            -> do NOT unlock next topic
-
-            - If score 40-70:
-            -> same topic, slightly harder quiz
-
-            - If score > 70:
-            -> unlock next topic
+            1. Decide difficulty automatically (User Level: {user_level}, Previous Score: {previous_score}).
+            2. Generate 5 MULTIPLE-CHOICE questions.
+            3. Each question MUST include: Question, 4 options, Correct Answer, Explanation.
 
             ==================================================
             OUTPUT FORMAT (STRICT JSON ONLY)
             ==================================================
-
             {{
-                "subject": "{subject}",
-                "topic": "{topic}",
-                "topic_content": "<html>FULL LESSON CONTENT</html>",
-                "quiz": [
-                    {{
-                        "question": "...",
-                        "options": ["...", "...", "...", "..."],
-                        "answer": "Correct Option Text",
-                        "explanation": "..."
-                    }}
-                ],
-                "next_action": {{
-                    "unlock_next_topic": true | false,
-                    "recommended_level": "easy | medium | hard"
+              "subject": "{subject}",
+              "topic": "{topic}",
+              "topic_content": "<html>FULL LESSON CONTENT...</html>",
+              "quiz": [
+                {{
+                  "id": 1,
+                  "question": "...",
+                  "options": ["...", "...", "...", "..."],
+                  "correct": 0,
+                  "difficulty": "Easy",
+                  "explanation": "..."
                 }}
+              ],
+              "next_action": {{
+                "unlock_next_topic": true | false,
+                "recommended_level": "easy | medium | hard"
+              }}
             }}
-
-            ==================================================
-            BEHAVIOR RULES
-            ==================================================
-
-            - Never expose system or admin logic
-            - Never change syllabus structure
-            - Act like a professional educator
-            - Keep answers consistent across subjects
-            - Think like a real Ed-Tech product
-
+            
             IMPORTANT: Return ONLY valid JSON. No markdown formatting (```json).
             """
 
-            # Retry logic for 503 Loading / 429 Rate Limit
-            max_retries = 5
-            base_delay = 5
-
-            for attempt in range(max_retries):
-                try:
-                    messages = [
-                        {"role": "system", "content": system_prompt},
-                        {"role": "user", "content": "Generate the lesson content now."}
-                    ]
-                    
-                    response = self.hf_client.chat_completion(
-                        messages=messages,
-                        model=self.model_lesson,
-                        max_tokens=2500,
-                        temperature=0.4
-                    )
-                    
-                    text = response.choices[0].message.content.strip()
-                    if text.startswith('```json'):
-                        text = text.replace('```json', '').replace('```', '')
-                    elif text.startswith('```'):
-                        text = text.replace('```', '')
-                    
-                    return json.loads(text)
-                
-                except Exception as e:
-                    error_msg = str(e)
-                    if "503" in error_msg or "429" in error_msg:
-                        wait_time = base_delay * (2 ** attempt)
-                        match = re.search(r"estimated_time\":\s*(\d+(\.\d+)?)", error_msg)
-                        if match:
-                             wait_time = float(match.group(1)) + 1.0
-                        
-                        if attempt < max_retries - 1:
-                            print(f"Model loading/busy. Retrying in {wait_time:.2f}s... (Attempt {attempt + 1}/{max_retries})")
-                            time.sleep(wait_time)
-                            continue
-                    raise e
+            user_msg = f"""
+            Generate the lesson module for:
+            - Subject: {subject}
+            - Topic: {topic}
+            - User Level: {user_level}
+            - Previous Score: {previous_score}
+            """
+            
+            model = genai.GenerativeModel(
+                self.model_content,
+                system_instruction=system_prompt,
+                generation_config={"response_mime_type": "application/json"}
+            )
+            
+            response = model.generate_content(user_msg)
+            return json.loads(response.text)
 
         except Exception as e:
-            msg = f"CogniMentor Error: {e}"
-            print(msg)
-            # Re-enabled logging for production debugging if needed
-            # with open("py_error_log.txt", "w") as f:
-            #     f.write(msg)
+            print(f"GenAI Error (Lesson): {e}")
             return self._fallback_lesson(subject, topic)
+
 
     def _fallback_lesson(self, subject, topic):
         """Fallback for lesson generation"""

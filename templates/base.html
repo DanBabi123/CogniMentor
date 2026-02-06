@@ -7,57 +7,17 @@
     <title>{% block title %}CogniMentor{% endblock %} - Premium AI Learning</title>
 
     <!-- Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Poppins:wght@500;600;700&display=swap"
+        rel="stylesheet">
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
     <!-- Design System -->
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/style1.css') }}">
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}"> <!-- Specific overrides -->
-
-    <style>
-        /* Toast Container */
-        #toast-container {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            z-index: 1000;
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-        }
-
-        .toast {
-            background: white;
-            padding: 16px 24px;
-            border-radius: 12px;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            transform: translateX(120%);
-            transition: transform 0.3s ease;
-            font-weight: 500;
-            opacity: 0;
-        }
-
-        .toast.show {
-            transform: translateX(0);
-            opacity: 1;
-        }
-
-        .toast-success {
-            border-left: 4px solid var(--success);
-        }
-
-        .toast-info {
-            border-left: 4px solid var(--primary);
-        }
-
-        .toast-error {
-            border-left: 4px solid var(--secondary);
-        }
-    </style>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
+    {% block styles %}{% endblock %}
 </head>
 
 <body>
@@ -76,130 +36,179 @@
         {% endwith %}
     </div>
 
+    {% block layout_body %}
     <!-- App Layout -->
-    <div class="app-container">
+    <div class="app-shell">
 
-        <!-- Sidebar (Auth Only, Not on Landing) -->
-        {% if current_user.is_authenticated and request.endpoint != 'main.index' %}
-        <aside class="sidebar">
+        <!-- Sidebar (Auth Only, Not on Landing, Optional Hide) -->
+        {% if current_user.is_authenticated and request.endpoint != 'main.index' and not hide_sidebar %}
+        <aside class="sidebar glass-effect">
             <div class="nav-brand">
-                <span class="material-icons" style="color: var(--primary);">school</span>
+                <span class="material-icons" style="color: var(--primary); font-size: 28px;">school</span>
                 <span>CogniMentor</span>
             </div>
-            <nav style="margin-top: 20px;">
-                <ul style="display: flex; flex-direction: column; gap: 4px; padding: 0;">
 
-                    <!-- === ADMIN MENU === -->
-                    {% if current_user.role == 'admin' %}
-                    <li>
-                        <a href="{{ url_for('main.dashboard') }}"
-                            class="nav-link {% if request.endpoint == 'main.dashboard' %}active{% endif %}">
-                            <span class="material-icons">dashboard</span> Admin Console
-                        </a>
-                    </li>
-                    <li>
-                        <a href="{{ url_for('admin.manage_users') }}" class="nav-link">
-                            <span class="material-icons">people</span> Manage Users
-                        </a>
-                    </li>
-                    <li>
-                        <a href="{{ url_for('admin.content_manager') }}" class="nav-link">
-                            <span class="material-icons">library_books</span> Content Manager
-                        </a>
-                    </li>
-                    <li>
-                        <a href="{{ url_for('admin.analytics') }}" class="nav-link">
-                            <span class="material-icons">analytics</span> Analytics
-                        </a>
-                    </li>
-                    <li>
-                        <a href="{{ url_for('admin.settings') }}" class="nav-link">
-                            <span class="material-icons">settings</span> Settings
-                        </a>
-                    </li>
+            {% if current_user.role == 'admin' %}
+            <!-- ADMIN MENU -->
+            <div class="nav-group">
+                <div class="nav-group-label">Admin Controls</div>
+                <a href="{{ url_for('admin.dashboard') }}"
+                    class="nav-link {% if request.endpoint == 'admin.dashboard' %}active{% endif %}">
+                    <span class="material-icons">dashboard</span>
+                    <span>Overview</span>
+                </a>
+            </div>
 
-                    <!-- === STUDENT MENU === -->
+            <div class="nav-group">
+                <div class="nav-group-label">Management</div>
+                <a href="{{ url_for('admin.manage_subjects') }}"
+                    class="nav-link {% if request.endpoint == 'admin.manage_subjects' %}active{% endif %}">
+                    <span class="material-icons">library_books</span>
+                    <span>Subjects</span>
+                </a>
+                <a href="{{ url_for('admin.manage_users') }}"
+                    class="nav-link {% if request.endpoint == 'admin.manage_users' %}active{% endif %}">
+                    <span class="material-icons">people</span>
+                    <span>Users</span>
+                </a>
+                <a href="{{ url_for('admin.analytics') }}"
+                    class="nav-link {% if request.endpoint == 'admin.analytics' %}active{% endif %}">
+                    <span class="material-icons">analytics</span>
+                    <span>Platform Stats</span>
+                </a>
+            </div>
+            {% else %}
+            <!-- STUDENT MENU -->
+
+            <!-- Group 1: Overview -->
+            <div class="nav-group">
+                <div class="nav-group-label">Overview</div>
+                <a href="{{ url_for('main.dashboard') }}"
+                    class="nav-link {% if request.endpoint == 'main.dashboard' %}active{% endif %}">
+                    <span class="material-icons">dashboard</span>
+                    <span>Dashboard</span>
+                </a>
+            </div>
+
+            <!-- Group 2: My Learning -->
+            <div class="nav-group">
+                <div class="nav-group-label">My Learning</div>
+                <a href="{{ url_for('main.learning_path') }}"
+                    class="nav-link {% if request.endpoint == 'main.learning_path' %}active{% endif %}">
+                    <span class="material-icons">map</span>
+                    <span>Roadmap</span>
+                </a>
+                <a href="{{ url_for('main.my_subjects') }}"
+                    class="nav-link {% if request.endpoint == 'main.my_subjects' %}active{% endif %}">
+                    <span class="material-icons">library_books</span>
+                    <span>My Subjects</span>
+                </a>
+                <a href="{{ url_for('main.dashboard', _anchor='syllabus') }}" class="nav-link">
+                    <span class="material-icons">play_circle_outline</span>
+                    <span>Continue Learning</span>
+                </a>
+            </div>
+
+            <!-- Group 3: Practice & Performance -->
+            <div class="nav-group">
+                <div class="nav-group-label">Growth</div>
+                <a href="{{ url_for('main.analytics') }}"
+                    class="nav-link {% if request.endpoint == 'main.analytics' %}active{% endif %}">
+                    <span class="material-icons">insights</span>
+                    <span>Analytics</span>
+                </a>
+                <a href="#" class="nav-link" onclick="alert('Mock Tests coming soon!'); return false;">
+                    <span class="material-icons">quiz</span>
+                    <span>Mock Tests</span>
+                </a>
+            </div>
+
+            <!-- Group 4: AI & Support -->
+            <div class="nav-group">
+                <div class="nav-group-label">AI Tools</div>
+                <a href="{{ url_for('advisor.start') }}"
+                    class="nav-link {% if 'advisor.' in request.endpoint %}active{% endif %}">
+                    <span class="material-icons">smart_toy</span>
+                    <span>AI Mentor</span>
+                </a>
+                <a href="{{ url_for('main.generator') }}"
+                    class="nav-link {% if request.endpoint == 'main.generator' %}active{% endif %}">
+                    <span class="material-icons">auto_awesome</span>
+                    <span>Generator</span>
+                </a>
+            </div>
+
+            <div style="flex: 1;"></div>
+
+            <!-- Bottom: Profile & Settings -->
+            <div class="nav-group mt-4">
+                <a href="{{ url_for('main.profile') }}"
+                    class="nav-link {% if request.endpoint == 'main.profile' %}active{% endif %}">
+                    <span class="material-icons">settings</span>
+                    <span>Settings</span>
+                </a>
+                <a href="{{ url_for('main.contact') }}"
+                    class="nav-link {% if request.endpoint == 'main.contact' %}active{% endif %}">
+                    <span class="material-icons">headset_mic</span>
+                    <span>Support</span>
+                </a>
+            </div>
+            {% endif %}
+
+            <!-- User Profile Snippet -->
+            <div class="sidebar-footer"
+                style="margin-top: 10px; padding-top: 16px; border-top: 1px solid var(--border-light);">
+                <div class="flex items-center gap-3 p-2 rounded-lg hover:bg-gray-50 transition cursor-pointer"
+                    onclick="window.location.href='{{ url_for('main.profile') }}'">
+                    {% if current_user.profile_pic %}
+                    <img src="{{ url_for('static', filename='uploads/' + current_user.profile_pic) }}"
+                        style="width: 40px; height: 40px; border-radius: 50%; object-fit: cover; border: 2px solid white; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
                     {% else %}
-                    <li>
-                        <a href="{{ url_for('main.dashboard') }}"
-                            class="nav-link {% if request.endpoint == 'main.dashboard' %}active{% endif %}">
-                            <span class="material-icons">dashboard</span> Dashboard
-                        </a>
-                    </li>
-                    <li>
-                        <a href="{{ url_for('main.my_subjects') }}"
-                            class="nav-link {% if request.endpoint == 'main.my_subjects' %}active{% endif %}">
-                            <span class="material-icons">import_contacts</span> My Subjects
-                        </a>
-                    </li>
-                    <li>
-                        <a href="{{ url_for('main.content_generator') }}"
-                            class="nav-link {% if request.endpoint == 'main.content_generator' %}active{% endif %}">
-                            <span class="material-icons">auto_stories</span> AI Generator
-                        </a>
-                    </li>
-                    <li>
-                        <a href="{{ url_for('advisor.start') }}"
-                            class="nav-link {% if request.endpoint == 'advisor.start' %}active{% endif %}">
-                            <span class="material-icons">explore</span> AI Advisor
-                        </a>
-                    </li>
-                    <li>
-                        <a href="{{ url_for('main.profile') }}"
-                            class="nav-link {% if request.endpoint == 'main.profile' %}active{% endif %}">
-                            {% if current_user.profile_pic %}
-                            <img src="{{ url_for('static', filename='profile_pics/' + current_user.profile_pic) }}"
-                                alt="" class="nav-profile-pic">
-                            {% else %}
-                            <span class="material-icons" style="margin-right:12px;">account_circle</span>
-                            {% endif %}
-                            Profile
-                        </a>
-                    </li>
-                    <li>
-                        <a href="{{ url_for('main.contact') }}"
-                            class="nav-link {% if request.endpoint == 'main.contact' %}active{% endif %}">
-                            <span class="material-icons">contact_support</span> Contact Us
-                        </a>
-                    </li>
+                    <div class="bg-primary text-white rounded-full flex-center font-bold"
+                        style="width: 40px; height: 40px; font-size: 1rem;">
+                        {{ current_user.name[0] | upper }}
+                    </div>
                     {% endif %}
 
-                    <!-- === COMMON (LOGOUT) === -->
-                    <li style="margin-top: auto; border-top: 1px solid var(--border-color); padding-top: 8px;">
-                        <a href="{{ url_for('auth.logout') }}" class="nav-link" style="color: #ea4335;">
-                            <span class="material-icons">logout</span> Logout
-                        </a>
-                    </li>
-                </ul>
+                    <div style="flex: 1; min-width: 0;">
+                        <div class="font-semibold text-sm truncate">{{ current_user.name }}</div>
+                        <div class="text-xs text-muted">Premium Student</div>
+                    </div>
+
+                    <a href="{{ url_for('auth.logout') }}" class="text-muted hover:text-danger p-1">
+                        <span class="material-icons" style="font-size: 20px;">logout</span>
+                    </a>
+                </div>
+            </div>
             </nav>
         </aside>
 
         <!-- Mobile Sidebar Overlay -->
-        <div class="sidebar-overlay"></div>
+        <div class="sidebar-overlay"
+            style="display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 40;"></div>
         {% endif %}
 
         <!-- Main Content (Full width if not auth OR if on landing page) -->
-        <main class="main-content" {% if not current_user.is_authenticated or request.endpoint=='main.index'
-            %}style="margin-left: 0; padding: 0;" {% endif %}>
+        <main class="main-content" {% if not current_user.is_authenticated or request.endpoint=='main.index' or
+            hide_sidebar %}style="margin-left: 0; width: 100%; padding: 0;" {% endif %}>
             <!-- Topbar (Mobile) -->
             {% if current_user.is_authenticated and request.endpoint != 'main.index' %}
-            <div class="mobile-topbar" style="display: none;"> <!-- Visible only on mobile via CSS -->
+            <div class="mobile-topbar"
+                style="display: none; padding: 16px; background: white; border-bottom: 1px solid var(--border-light);">
                 <button class="menu-toggle btn-icon"><span class="material-icons">menu</span></button>
-                <span class="brand">CogniMentor</span>
+                <span class="brand" style="font-family: var(--font-heading); font-weight: 700;">CogniMentor</span>
             </div>
             {% endif %}
 
             {% block content %}{% endblock %}
         </main>
     </div>
-
-    <!-- AI Chatbot -->
-    {% if current_user.is_authenticated %}
-    {% include 'chatbot/widget.html' %}
-    {% endif %}
+    {% endblock %}
 
     <!-- Global Scripts -->
+    <script src="{{ url_for('static', filename='js/dashboard.js') }}"></script>
     <script src="{{ url_for('static', filename='js/ui.js') }}"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
     {% block scripts %}{% endblock %}
 </body>
 

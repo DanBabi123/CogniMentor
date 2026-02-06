@@ -1,0 +1,133 @@
+{% extends "base.html" %}
+{% set hide_sidebar = True %}
+{% block title %}Choose Your Goal | CogniMentor{% endblock %}
+
+{% block content %}
+<div class="flex-center flex-col"
+    style="min-height: 90vh; padding: 40px; background: radial-gradient(circle at top right, rgba(79, 70, 229, 0.1), transparent 40%);">
+
+    <!-- Header -->
+    <header class="text-center animate-fade-in" style="max-width: 700px; margin-bottom: 48px;">
+        <h1 class="text-3xl font-bold mb-4">What's your learning goal? 🎯</h1>
+        <p class="text-muted text-lg">
+            CogniMentor personalizes your experience based on what you want to achieve.
+            Select one path to get started.
+        </p>
+    </header>
+
+    <!-- Grid -->
+    <div class="goal-grid animate-fade-in" style="animation-delay: 0.1s;">
+
+        <!-- Technology -->
+        <a href="{{ url_for('main.set_goal', category='Technology') }}" class="goal-card glass-card">
+            <div class="icon-box" style="background: rgba(var(--primary-hue), 90%, 56%, 0.1); color: var(--primary);">
+                <span class="material-icons">code</span>
+            </div>
+            <h3>Programming & Dev</h3>
+            <p>Master Python, Web Development, and core CS concepts for tech interviews.</p>
+            <div class="arrow-icon"><span class="material-icons">arrow_forward</span></div>
+        </a>
+
+        <!-- GATE -->
+        <a href="{{ url_for('main.set_goal', category='GATE') }}" class="goal-card glass-card">
+            <div class="icon-box" style="background: rgba(236, 72, 153, 0.1); color: var(--accent-pink);">
+                <span class="material-icons">school</span>
+            </div>
+            <h3>GATE CSE</h3>
+            <p>Comprehensive syllabus coverage for GATE Computer Science exam.</p>
+            <div class="arrow-icon"><span class="material-icons">arrow_forward</span></div>
+        </a>
+
+        <!-- Data Science -->
+        <a href="{{ url_for('main.set_goal', category='Technology') }}" class="goal-card glass-card">
+            <div class="icon-box" style="background: rgba(20, 184, 166, 0.1); color: var(--accent-teal);">
+                <span class="material-icons">insights</span>
+            </div>
+            <h3>Data Science & AI</h3>
+            <p>Learn Machine Learning, AI algorithms, and Data Analytics.</p>
+            <div class="arrow-icon"><span class="material-icons">arrow_forward</span></div>
+        </a>
+
+        <!-- Govt Exams -->
+        <a href="{{ url_for('main.set_goal', category='Government Exams') }}" class="goal-card glass-card">
+            <div class="icon-box" style="background: rgba(245, 158, 11, 0.1); color: var(--accent-orange);">
+                <span class="material-icons">account_balance</span>
+            </div>
+            <h3>Government Exams</h3>
+            <p>Prepare for UPSC, SSC, and Banking exams with structured lessons.</p>
+            <div class="arrow-icon"><span class="material-icons">arrow_forward</span></div>
+        </a>
+
+    </div>
+</div>
+
+<style>
+    .goal-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        gap: 24px;
+        width: 100%;
+        max-width: 1200px;
+    }
+
+    .goal-card {
+        padding: 32px;
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        text-decoration: none;
+        color: var(--text-main);
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        position: relative;
+        overflow: hidden;
+        border: 1px solid rgba(255, 255, 255, 0.6);
+    }
+
+    .goal-card:hover {
+        transform: translateY(-8px);
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.08);
+        /* Soft diffuse shadow */
+        border-color: var(--primary);
+    }
+
+    .icon-box {
+        width: 64px;
+        height: 64px;
+        border-radius: 16px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 24px;
+    }
+
+    .icon-box .material-icons {
+        font-size: 32px;
+    }
+
+    .goal-card h3 {
+        font-size: 1.25rem;
+        margin-bottom: 8px;
+    }
+
+    .goal-card p {
+        font-size: 0.95rem;
+        color: var(--text-muted);
+        line-height: 1.5;
+    }
+
+    .arrow-icon {
+        position: absolute;
+        bottom: 24px;
+        right: 24px;
+        opacity: 0;
+        transform: translateX(-10px);
+        transition: all 0.3s;
+        color: var(--primary);
+    }
+
+    .goal-card:hover .arrow-icon {
+        opacity: 1;
+        transform: translateX(0);
+    }
+</style>
+{% endblock %}

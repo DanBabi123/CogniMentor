@@ -1,0 +1,115 @@
+{% extends "dashboard/dashboard_focus_layout.html" %}
+
+{% block focus_content %}
+<div class="h-full d-flex flex-col gap-6">
+    <!-- Welcome Section -->
+    <div class="glass-panel p-8 text-center flex-1 d-flex flex-col justify-center">
+        <div class="d-flex justify-center mb-6">
+            <div class="welcome-icon" style="
+                width: 80px; height: 80px; 
+                background: var(--primary-light); 
+                color: var(--primary); 
+                border-radius: 50%; 
+                display: flex; 
+                align-items: center; 
+                justify-content: center;
+            ">
+                <span class="material-icons" style="font-size: 40px;">{{ selected_subject.icon }}</span>
+            </div>
+        </div>
+
+        <h2 class="section-title justify-center" style="font-size: 1.8rem;">
+            Welcome to {{ selected_subject.name }} Prep
+        </h2>
+
+        <div class="d-flex justify-center mb-6">
+            <a href="{{ url_for('main.my_subjects') }}" class="btn btn-outline btn-sm">
+                <span class="material-icons">edit</span> Change Subject
+            </a>
+        </div>
+
+        <p class="text-muted" style="max-width: 500px; margin: 0 auto 30px;">
+            Your dedicated focus environment is ready. Select a topic from the syllabus on the right to begin learning,
+            or click below to resume where you left off.
+        </p>
+
+        {% if current_active_topic %}
+        <div class="card bg-primary text-white p-6 mx-auto w-full"
+            style="max-width: 600px; background: var(--gradient-primary);">
+            <div class="d-flex flex-col align-start text-left">
+                <span class="text-xs uppercase tracking-wider opacity-90 mb-2">Up Next</span>
+                <h3 class="text-xl font-bold mb-4">{{ current_active_topic.title }}</h3>
+
+                <div class="d-flex align-center gap-4">
+                    <a href="{{ url_for('main.topic_view', topic_id=current_active_topic.id) }}" class="btn"
+                        style="background: white; color: var(--primary);">
+                        <span class="material-icons">play_circle</span> Start Learning
+                    </a>
+                    <span class="text-sm opacity-90">Est. 15 mins</span>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+
+    <!-- Performance Stats -->
+    <div>
+        <h3 class="section-title">Your Performance</h3>
+        <div class="stats-row">
+            <div class="stat-card glass-panel">
+                <div class="stat-meta d-flex align-center gap-2 text-muted mb-1">
+                    <span class="material-icons text-primary">local_fire_department</span>
+                    <span>Streak</span>
+                </div>
+                <div class="stat-value text-2xl font-bold">{{ stats.streak }} Days</div>
+            </div>
+            <div class="stat-card glass-panel">
+                <div class="stat-meta d-flex align-center gap-2 text-muted mb-1">
+                    <span class="material-icons text-success">check_circle</span>
+                    <span>Completed</span>
+                </div>
+                <div class="stat-value text-2xl font-bold">{{ stats.completed_count }}/{{ stats.total_count }}</div>
+            </div>
+            <div class="stat-card glass-panel">
+                <div class="stat-meta d-flex align-center gap-2 text-muted mb-1">
+                    <span class="material-icons text-accent">emoji_events</span>
+                    <span>Avg Score</span>
+                </div>
+                <div class="stat-value text-2xl font-bold">{{ stats.avg_score }}%</div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+{{ super() }}
+{% if show_completion %}
+<div id="completionModal" class="modal-overlay d-flex align-center justify-center"
+    style="position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 1000; backdrop-filter: blur(4px);">
+    <div class="glass-panel p-8 bg-white animate-fade-up text-center" style="max-width: 600px; width: 90%;">
+        <div style="font-size: 60px; margin-bottom: 20px;">🎉</div>
+        <h2 class="section-title justify-center text-dark mb-4">Subject Mastered!</h2>
+        <p class="text-muted mb-8">
+            You have successfully completed <strong>{{ selected_subject.name }}</strong>. Incredible work!
+        </p>
+
+        <h4 class="font-bold text-primary mb-4 text-left">Recommended Next Steps:</h4>
+        <div class="d-flex gap-4 mb-8">
+            {% for sub in recommended_subjects %}
+            <a href="{{ url_for('main.dashboard', subject_id=sub.id) }}"
+                class="card p-4 d-flex flex-col align-center text-center gap-2 hover-primary" style="flex: 1;">
+                <span class="material-icons text-primary text-3xl">{{ sub.icon }}</span>
+                <span class="font-bold">{{ sub.name }}</span>
+            </a>
+            {% endfor %}
+        </div>
+
+        <button onclick="document.getElementById('completionModal').style.display='none'"
+            class="btn btn-outline w-full">
+            Close & Review Material
+        </button>
+    </div>
+</div>
+{% endif %}
+{% endblock %}

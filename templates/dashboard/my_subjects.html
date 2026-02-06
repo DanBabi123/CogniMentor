@@ -1,42 +1,118 @@
 {% extends "base.html" %}
-{% block title %}My Subjects{% endblock %}
+{% block title %}User Dashboard{% endblock %}
 
 {% block content %}
-<div class="dashboard-wrapper animate-fade-up">
+<div class="dashboard-main animate-fade-up">
 
-    <header style="margin-bottom: 30px;">
-        <h1 style="font-size: 28px; font-weight: 700; color: var(--dark);">My Subjects</h1>
-        <p style="color: var(--gray-1);">Explore your enrolled courses and continue learning.</p>
+    <!-- Welcome Header -->
+    <!-- Welcome Header -->
+    <header class="section-header" style="text-align: left; margin-bottom: 30px; position: relative;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+            <a href="{{ url_for('main.goal_selection') }}"
+                style="font-size: 14px; color: var(--primary); text-decoration: none; font-weight: 600; display: inline-flex; align-items: center; gap: 4px;">
+                <span class="material-icons" style="font-size: 16px;">arrow_back</span> Change Goal
+            </a>
+
+            <a href="{{ url_for('main.profile') }}"
+                style="display: inline-flex; align-items: center; gap: 8px; background: white; padding: 8px 16px; border-radius: 20px; border: 1px solid var(--gray-2); text-decoration: none; color: var(--dark); font-weight: 600; font-size: 14px; transition: all 0.2s;">
+                <span class="material-icons" style="font-size: 18px; color: var(--primary);">person</span> Profile
+            </a>
+        </div>
+
+        <h1 style="font-size: 32px; font-weight: 800; color: var(--dark); margin-bottom: 12px;">
+            Hey {{ current_user.name }}, congratulations on selecting {{ category or current_user.selected_goal }}!
+        </h1>
+        <p style="color: var(--gray-1); font-size: 18px; max-width: 800px; line-height: 1.6;">
+            Let’s start preparing from today.
+        </p>
     </header>
 
-    <div class="card-grid">
+
+
+    <!-- Learning Path (Subjects) -->
+    <h3 class="section-title" style="margin-bottom: 24px; font-size: 20px; font-weight: 700;">Your Learning Path</h3>
+    <div class="grid-layout">
         {% for subject in subjects %}
-        <div class="subject-card glass-panel"
-            style="padding: 0; overflow: hidden; background: white; transition: transform 0.2s;">
-            <div
-                style="height: 120px; background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%); display: flex; align-items: center; justify-content: center;">
-                <span class="material-icons" style="font-size: 48px; color: white;">school</span>
+        <a href="{{ url_for('main.dashboard', subject_id=subject.id) }}" class="subject-card interactive-card"
+            style="text-decoration: none;">
+            <div class="card-content" style="align-items: flex-start; text-align: left;">
+                <div class="icon-square">
+                    <span class="material-icons">{{ subject.icon }}</span>
+                </div>
+                <h3>{{ subject.name }}</h3>
+                <p style="font-size: 14px; margin-bottom: 0;">{{ subject.category }}</p>
             </div>
-
-            <div style="padding: 24px;">
-                <h3 style="font-size: 18px; font-weight: 600; margin-bottom: 8px;">{{ subject.name }}</h3>
-                <p style="font-size: 14px; color: var(--gray-1); margin-bottom: 20px;">{{ subject.description }}</p>
-
-                <a href="{{ url_for('main.subject_view', subject_id=subject.id) }}" class="btn btn-outline"
-                    style="width: 100%;">
-                    Continue Learning
-                </a>
+            <div class="action-icon">
+                <span class="material-icons">arrow_forward</span>
             </div>
-        </div>
+        </a>
         {% endfor %}
     </div>
 
 </div>
 
+<!-- Reuse the CSS from goal_selection for consistency -->
 <style>
-    .subject-card:hover {
+    .grid-layout {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        gap: 24px;
+        width: 100%;
+    }
+
+    .interactive-card {
+        background: white;
+        border-radius: 20px;
+        padding: 30px;
+        transition: all 0.3s ease;
+        border: 1px solid var(--gray-2);
+        cursor: pointer;
+        position: relative;
+        overflow: hidden;
+        display: block;
+    }
+
+    .interactive-card:hover {
         transform: translateY(-5px);
-        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+        box-shadow: 0 15px 30px rgba(0, 0, 0, 0.08);
+        border-color: transparent;
+    }
+
+    .icon-square {
+        width: 50px;
+        height: 50px;
+        border-radius: 12px;
+        background: var(--bg-light);
+        color: var(--primary);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 15px;
+    }
+
+    .action-icon {
+        position: absolute;
+        bottom: 25px;
+        right: 25px;
+        color: var(--primary);
+        opacity: 0;
+        transform: translateX(-10px);
+        transition: all 0.3s;
+    }
+
+    .interactive-card:hover .action-icon {
+        opacity: 1;
+        transform: translateX(0);
+    }
+
+    .interactive-card h3 {
+        color: var(--dark);
+        font-weight: 700;
+        margin-bottom: 5px;
+    }
+
+    .interactive-card p {
+        color: var(--gray-1);
     }
 </style>
 {% endblock %}

@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+{% block title %}My Learning Path | CogniMentor{% endblock %}
+
+{% block content %}
+<div class="main-content">
+    <header class="mb-4">
+        <h1 class="page-title flex items-center gap-2" style="font-size: 1.8rem;">
+            <span class="material-icons text-primary">map</span> My Learning Path
+        </h1>
+        <p class="text-muted">Your personalized, AI-optimized journey to mastery.</p>
+    </header>
+
+    <div class="timeline-container">
+        {% for item in timeline %}
+        <div class="timeline-item {{ item.status }}">
+            <div class="timeline-icon">
+                {% if item.status == 'completed' %}
+                <span class="material-icons">check</span>
+                {% elif item.status == 'active' %}
+                <span class="material-icons">play_arrow</span>
+                {% else %}
+                <span class="material-icons">lock</span>
+                {% endif %}
+            </div>
+
+            <div class="timeline-content">
+                <div class="flex-between mb-2">
+                    <h4 style="font-size: 1.1rem; font-weight: 600; color: var(--text-main);">
+                        {{ item.topic.title }}
+                    </h4>
+
+                    {% if item.status == 'active' %}
+                    <a href="{{ url_for('main.topic_view', topic_id=item.topic.id) }}" class="btn btn-primary">
+                        Resume
+                    </a>
+                    {% elif item.status == 'completed' %}
+                    <a href="{{ url_for('main.quiz_view', topic_id=item.topic.id) }}" class="btn btn-outline">
+                        Revise
+                    </a>
+                    {% endif %}
+                </div>
+
+                <div class="flex items-center gap-2">
+                    <span class="badge badge-gray">{{ item.topic.difficulty }}</span>
+                    {% if item.status == 'completed' %}
+                    <span class="badge badge-green">Completed</span>
+                    {% elif item.status == 'active' %}
+                    <span class="badge badge-blue">In Progress</span>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

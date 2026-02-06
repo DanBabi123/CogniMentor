@@ -1,12 +1,31 @@
 {% extends "base.html" %}
 
-{% block content %}
+{% block styles %}
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+{% endblock %}
+
+{% block layout_body %}
+
+<!-- Navbar / Header Area -->
+<header class="landing-header" style="width: 100%; max-width: 1200px; margin: 0 auto; position: relative; z-index: 10;">
+    <div class="container flex-between" style="padding: 1.5rem 0;">
+        <div class="logo" style="display: flex; align-items: center; gap: 0.5rem;">
+            <span class="material-icons text-primary" style="font-size: 2rem;">school</span>
+            <span class="logo-text" style="color: #1e40af; font-size: 1.5rem; font-weight: 700;">CogniMentor</span>
+        </div>
+        <!-- Optional Auth Links if needed -->
+    </div>
+</header>
+
 <section class="hero">
+
     <div class="container">
         <div class="hero-content">
             <h1 class="hero-title">Welcome to <span class="brand-highlight">CogniMentor</span></h1>
             <p class="hero-tagline">Learn Smart. Crack Any Exam.</p>
-            <p class="hero-description">Your ultimate platform for Aptitude, CSE subjects, GATE preparation, and Government exam success.</p>
+            <p class="hero-description">Your ultimate platform for Aptitude, CSE subjects, GATE preparation, and
+                Government exam success.</p>
             <div class="hero-buttons">
                 <a href="#cta" class="btn btn-primary">Get Started</a>
                 <a href="{{ url_for('auth.login') }}" class="btn btn-secondary">Login</a>
@@ -42,7 +61,8 @@
             <article class="feature-card">
                 <div class="feature-icon">📊</div>
                 <h3>Aptitude Training</h3>
-                <p>Quantitative aptitude, logical reasoning, and verbal ability with practice tests and detailed solutions.</p>
+                <p>Quantitative aptitude, logical reasoning, and verbal ability with practice tests and detailed
+                    solutions.</p>
             </article>
             <article class="feature-card">
                 <div class="feature-icon">💾</div>
@@ -115,4 +135,389 @@
         </div>
     </div>
 </section>
+
+<footer class="footer">
+    <div class="container">
+        <div class="footer-content">
+            <div class="logo">
+                <span class="material-icons logo-img" style="font-size: 30px; color: var(--bg-white);">school</span>
+                <span class="logo-text" style="color: var(--bg-white);">CogniMentor</span>
+            </div>
+            <div class="footer-links">
+                <a href="{{ url_for('main.privacy') }}">Privacy Policy</a>
+                <a href="{{ url_for('main.terms') }}">Terms of Service</a>
+                <a href="{{ url_for('main.contact') }}">Contact</a>
+            </div>
+        </div>
+        <div style="text-align: center; margin-top: 2rem; color: var(--text-light); font-size: 0.9rem;">
+            &copy; 2026 CogniMentor. All rights reserved.
+        </div>
+    </div>
+</footer>
+
+<style>
+    /* Overall Page: Centered with educational-themed background */
+    body {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        min-height: 100vh;
+        margin: 0;
+        padding: 0;
+        background: linear-gradient(135deg, #f0f4f8 0%, #e0f2fe 50%, #bae6fd 100%), url('https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80') no-repeat center center;
+        background-size: cover;
+        position: relative;
+        font-family: 'Poppins', sans-serif;
+    }
+
+    body::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(255, 255, 255, 0.85);
+        backdrop-filter: blur(2px);
+        z-index: 1;
+    }
+
+    section,
+    footer {
+        position: relative;
+        z-index: 2;
+        width: 100%;
+        max-width: 1200px;
+        margin: 0 auto;
+    }
+
+    /* Hero Section: Enhanced with premium styling */
+    .hero {
+        padding: 4rem 2rem;
+        text-align: center;
+        background: linear-gradient(145deg, rgba(255, 255, 255, 0.9) 0%, rgba(248, 250, 252, 0.9) 100%);
+        border-radius: 20px;
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+        margin-bottom: 4rem;
+    }
+
+    .hero-title {
+        font-size: 3rem;
+        font-weight: 700;
+        color: #1e40af;
+        margin-bottom: 1rem;
+        text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    .brand-highlight {
+        color: #3b82f6;
+    }
+
+    .hero-tagline {
+        font-size: 1.5rem;
+        font-weight: 600;
+        color: #64748b;
+        margin-bottom: 1rem;
+    }
+
+    .hero-description {
+        font-size: 1.2rem;
+        color: #374151;
+        margin-bottom: 2rem;
+        max-width: 600px;
+        margin-left: auto;
+        margin-right: auto;
+    }
+
+    .hero-buttons {
+        display: flex;
+        gap: 1rem;
+        justify-content: center;
+        margin-bottom: 2rem;
+    }
+
+    .btn {
+        padding: 1rem 2rem;
+        border-radius: 12px;
+        font-weight: 600;
+        text-decoration: none;
+        transition: all 0.3s ease;
+    }
+
+    .btn-primary {
+        background: linear-gradient(145deg, #3b82f6 0%, #1d4ed8 100%);
+        color: white;
+        box-shadow: 0 8px 20px rgba(59, 130, 246, 0.3);
+    }
+
+    .btn-primary:hover {
+        transform: translateY(-3px) scale(1.05);
+        box-shadow: 0 12px 25px rgba(59, 130, 246, 0.4);
+    }
+
+    .btn-secondary {
+        background: #f3f4f6;
+        color: #374151;
+        border: 2px solid #e5e7eb;
+    }
+
+    .btn-secondary:hover {
+        background: #e5e7eb;
+        transform: translateY(-3px);
+    }
+
+    .hero-visual {
+        display: flex;
+        justify-content: center;
+        gap: 1rem;
+        flex-wrap: wrap;
+    }
+
+    .floating-card {
+        background: white;
+        padding: 1rem;
+        border-radius: 12px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        transition: transform 0.3s ease;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .floating-card:hover {
+        transform: translateY(-5px);
+    }
+
+    /* Features Section: Premium cards */
+    .features {
+        padding: 4rem 2rem;
+        background: rgba(255, 255, 255, 0.95);
+        border-radius: 20px;
+        box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+        margin-bottom: 4rem;
+    }
+
+    .section-title {
+        font-size: 2.5rem;
+        font-weight: 700;
+        color: #1e40af;
+        text-align: center;
+        margin-bottom: 1rem;
+    }
+
+    .section-subtitle {
+        font-size: 1.2rem;
+        color: #64748b;
+        text-align: center;
+        margin-bottom: 3rem;
+    }
+
+    .features-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 2rem;
+    }
+
+    .feature-card {
+        background: linear-gradient(145deg, #ffffff 0%, #f8fafc 100%);
+        padding: 2rem;
+        border-radius: 16px;
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        text-align: center;
+    }
+
+    .feature-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 15px 35px rgba(0, 0, 0, 0.15);
+    }
+
+    .feature-icon {
+        font-size: 3rem;
+        margin-bottom: 1rem;
+    }
+
+    .feature-card h3 {
+        font-size: 1.5rem;
+        font-weight: 600;
+        color: #1f2937;
+        margin-bottom: 1rem;
+    }
+
+    .feature-card p {
+        color: #64748b;
+        line-height: 1.6;
+    }
+
+    /* Why Us Section: Enhanced grid */
+    .why-us {
+        padding: 4rem 2rem;
+        background: rgba(255, 255, 255, 0.95);
+        border-radius: 20px;
+        box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+        margin-bottom: 4rem;
+    }
+
+    .why-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 2rem;
+    }
+
+    .why-card {
+        background: linear-gradient(145deg, #ffffff 0%, #f8fafc 100%);
+        padding: 2rem;
+        border-radius: 16px;
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        position: relative;
+    }
+
+    .why-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 15px 35px rgba(0, 0, 0, 0.15);
+    }
+
+    .why-number {
+        font-size: 2rem;
+        font-weight: 700;
+        color: #3b82f6;
+        margin-bottom: 1rem;
+    }
+
+    .why-card h3 {
+        font-size: 1.5rem;
+        font-weight: 600;
+        color: #1f2937;
+        margin-bottom: 1rem;
+    }
+
+    .why-card p {
+        color: #64748b;
+        line-height: 1.6;
+    }
+
+    /* CTA Section: Premium call-to-action */
+    .cta {
+        padding: 4rem 2rem;
+        background: linear-gradient(145deg, #3b82f6 0%, #1d4ed8 100%);
+        color: white;
+        border-radius: 20px;
+        box-shadow: 0 20px 40px rgba(59, 130, 246, 0.3);
+        text-align: center;
+        margin-bottom: 4rem;
+    }
+
+    .cta-content h2 {
+        font-size: 2.5rem;
+        font-weight: 700;
+        margin-bottom: 1rem;
+    }
+
+    .cta-content p {
+        font-size: 1.2rem;
+        margin-bottom: 2rem;
+        max-width: 600px;
+        margin-left: auto;
+        margin-right: auto;
+    }
+
+    .cta-buttons {
+        display: flex;
+        gap: 1rem;
+        justify-content: center;
+        margin-bottom: 1rem;
+    }
+
+    .btn-large {
+        padding: 1.2rem 2.5rem;
+        font-size: 1.1rem;
+    }
+
+    .btn-outline {
+        background: transparent;
+        color: white;
+        border: 2px solid white;
+    }
+
+    .btn-outline:hover {
+        background: white;
+        color: #1d4ed8;
+    }
+
+    .cta-note {
+        font-size: 0.9rem;
+        opacity: 0.8;
+    }
+
+    /* Footer: Clean and styled */
+    .footer {
+        padding: 2rem;
+        background: #1f2937;
+        color: white;
+        border-radius: 20px;
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+    }
+
+    .footer-content {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 1rem;
+    }
+
+    .logo {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .logo-text {
+        font-size: 1.5rem;
+        font-weight: 700;
+    }
+
+    .footer-links a {
+        color: #cbd5e1;
+        text-decoration: none;
+        margin-left: 1rem;
+        transition: color 0.3s ease;
+    }
+
+    .footer-links a:hover {
+        color: white;
+    }
+
+    /* Responsive Adjustments */
+    @media (max-width: 768px) {
+        .hero-title {
+            font-size: 2.5rem;
+        }
+
+        .section-title {
+            font-size: 2rem;
+        }
+
+        .features-grid,
+        .why-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .hero-buttons,
+        .cta-buttons {
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .footer-content {
+            flex-direction: column;
+            text-align: center;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block scripts %}
 {% endblock %}
