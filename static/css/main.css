@@ -1196,7 +1196,7 @@ ul {
 }
 
 .flex-nowrap {
-    flex-nowrap: nowrap;
+    flex-wrap: nowrap;
 }
 
 .justify-start {

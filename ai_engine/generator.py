@@ -40,11 +40,10 @@ class AIContentGenerator:
         # Configure GenAI
         genai_key = os.getenv('GEMINI_API_KEY')
         if not genai_key:
-             self.last_error = "Missing GEMINI_API_KEY"
-             
+            self.last_error = "Missing GEMINI_API_KEY"
         if genai_key and not self.gemini_configured:
             try:
-                genai.configure(api_key=genai_key)
+                genai.configure(api_key=genai_key) #type: ignore
                 self.gemini_configured = True
             except Exception as e:
                 print(f"GenAI Config Error: {e}")
@@ -59,9 +58,9 @@ class AIContentGenerator:
         self._configure_clients()
         # Ensure fallback if Gemini isn't configured, but prioritize it
         if not self.gemini_configured:
-             # Try one last time to init just in case env vars loaded late
-             self._configure_clients()
-             if not self.gemini_configured:
+            # Try one last time to init just in case env vars loaded late
+            self._configure_clients()
+            if not self.gemini_configured:
                 # DEBUG: Use the error message
                 error_msg = getattr(self, 'last_error', 'Unknown Error')
                 return self._rule_based_generation(topic_title, mode, error_info=error_msg)
@@ -77,7 +76,7 @@ class AIContentGenerator:
             
             user_prompt = prompts.get(mode, f"Explain {topic_title}")
             
-            model = genai.GenerativeModel(
+            model = genai.GenerativeModel( #type: ignore
                 self.model_content,
                 system_instruction="You are an expert technical educator. Output only clean HTML."
             )
@@ -102,7 +101,7 @@ class AIContentGenerator:
         
         # Fallback if Gemini not configured
         if not self.gemini_configured:
-             return self._fallback_quiz(topic)
+            return self._fallback_quiz(topic)
 
         # Distribute based on simplified 'Easy', 'Medium', 'Hard' if distribution provided
         # Or simple 'adaptive' prompt if not. The user prompt uses score to decide difficulty.
@@ -116,12 +115,12 @@ class AIContentGenerator:
             Format (JSON Array):
             [
                 {{
-                  "id": 1,
-                  "question": "...",
-                  "options": ["A", "B", "C", "D"],
-                  "correct": 0,
-                  "difficulty": "Medium",
-                  "explanation": "..."
+                "id": 1,
+                "question": "...",
+                "options": ["A", "B", "C", "D"],
+                "correct": 0,
+                "difficulty": "Medium",
+                "explanation": "..."
                 }}
             ]
             
@@ -132,7 +131,7 @@ class AIContentGenerator:
             - Difficulty mix: Follow logical progression (Easy -> Hard).
             """
             
-            model = genai.GenerativeModel(
+            model = genai.GenerativeModel( #type: ignore
                 self.model_content,
                 system_instruction="Output valid JSON array of 10 questions.",
                 generation_config={"response_mime_type": "application/json"}
@@ -162,13 +161,13 @@ class AIContentGenerator:
         
         quiz = []
         for i, (cat, q_structure, opts, corr, diff) in enumerate(base_questions, 1):
-             quiz.append({
+            quiz.append({
                 "id": i,
                 "question": q_structure.format(topic_title),
                 "options": opts,
                 "correct": corr,
                 "difficulty": diff
-             })
+            })
         return quiz
 
     def generate_feedback(self, score, max_score, topic_title):
@@ -189,7 +188,7 @@ class AIContentGenerator:
         
         # Fallback if Gemini not configured
         if not self.gemini_configured:
-             return self._fallback_lesson(subject, topic)
+            return self._fallback_lesson(subject, topic)
 
         try:
             system_prompt = f"""
@@ -206,33 +205,33 @@ class AIContentGenerator:
             For the subject "{subject}" and topic "{topic}":
 
             1. **Introduction & Real-World Context**
-               - Define the concept clearly.
-               - Explain WHY it exists and WHAT problem it solves.
-               - Give a relatable real-world analogy (e.g., "Think of a Library...").
+            - Define the concept clearly.
+            - Explain WHY it exists and WHAT problem it solves.
+            - Give a relatable real-world analogy (e.g., "Think of a Library...").
 
             2. **Deep Dive: The Mechanics (The "How")**
-               - Don't just show syntax. Explain the internal logic.
-               - If coding: Memory management, complexity, or interpreter steps.
-               - If theory: proven theorems or historical context.
-               - Use Diagrams (via ASCII/Mermaid if simple) or clear descriptors.
+            - Don't just show syntax. Explain the internal logic.
+            - If coding: Memory management, complexity, or interpreter steps.
+            - If theory: proven theorems or historical context.
+            - Use Diagrams (via ASCII/Mermaid if simple) or clear descriptors.
 
             3. **Step-by-Step Implementation / Solution**
-               - Provide a COMPLETE code example or solved problem.
-               - Comment EVERY line of code.
-               - Show expected output.
-               - "Walk through" the execution flow.
+            - Provide a COMPLETE code example or solved problem.
+            - Comment EVERY line of code.
+            - Show expected output.
+            - "Walk through" the execution flow.
 
             4. **Advanced Edge Cases & Best Practices**
-               - What happens if inputs are null? Large data?
-               - How do pros use this in production?
-               - Common "Gotchas" and how to debug them.
+            - What happens if inputs are null? Large data?
+            - How do pros use this in production?
+            - Common "Gotchas" and how to debug them.
 
             5. **Interactive Challenge**
-               - Pose a thought-provoking question to the student.
-               - Provide a "hidden" answer (using <details><summary>Check Answer</summary>...).
+            - Pose a thought-provoking question to the student.
+            - Provide a "hidden" answer (using <details><summary>Check Answer</summary>...).
 
             6. **Summary & Key Takeaways**
-               - Bullet points of the most critical concepts.
+            - Bullet points of the most critical concepts.
 
             ==================================================
             FORMATTING RULES
@@ -254,23 +253,23 @@ class AIContentGenerator:
             OUTPUT FORMAT (STRICT JSON ONLY)
             ==================================================
             {{
-              "subject": "{subject}",
-              "topic": "{topic}",
-              "topic_content": "<html>FULL LESSON CONTENT...</html>",
-              "quiz": [
+            "subject": "{subject}",
+            "topic": "{topic}",
+            "topic_content": "<html>FULL LESSON CONTENT...</html>",
+            "quiz": [
                 {{
-                  "id": 1,
-                  "question": "...",
-                  "options": ["...", "...", "...", "..."],
-                  "correct": 0,
-                  "difficulty": "Easy",
-                  "explanation": "..."
+                "id": 1,
+                "question": "...",
+                "options": ["...", "...", "...", "..."],
+                "correct": 0,
+                "difficulty": "Easy",
+                "explanation": "..."
                 }}
-              ],
-              "next_action": {{
+            ],
+            "next_action": {{
                 "unlock_next_topic": true | false,
                 "recommended_level": "easy | medium | hard"
-              }}
+            }}
             }}
             
             IMPORTANT: Return ONLY valid JSON. No markdown formatting (```json).
@@ -284,7 +283,7 @@ class AIContentGenerator:
             - Previous Score: {previous_score}
             """
             
-            model = genai.GenerativeModel(
+            model = genai.GenerativeModel( #type: ignore
                 self.model_content,
                 system_instruction=system_prompt,
                 generation_config={"response_mime_type": "application/json"}
