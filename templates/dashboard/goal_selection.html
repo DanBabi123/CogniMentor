@@ -1,0 +1,219 @@
+{% extends "base.html" %}
+{% set hide_sidebar = True %}
+{% block title %}Choose Your Goal | CogniMentor{% endblock %}
+
+{% block content %}
+<div class="flex-center flex-col"
+    style="min-height: 90vh; padding: 40px; background: radial-gradient(circle at top right, rgba(79, 70, 229, 0.1), transparent 40%);">
+
+
+    <header class="text-center animate-fade-in" style="max-width: 700px; margin-bottom: 48px;">
+        <h1 class="text-3xl font-bold mb-4">What's your learning goal? 🎯</h1>
+        <p class="text-muted text-lg">
+            CogniMentor personalizes your experience based on what you want to achieve.
+            Select one path to get started.
+        </p>
+    </header>
+
+
+    <div class="goal-grid animate-fade-in" style="animation-delay: 0.1s;">
+
+
+        <a href="{{ url_for('main.set_goal', category='Technology') }}" class="goal-card glass-card">
+            <div class="icon-box" style="background: rgba(var(--primary-hue), 90%, 56%, 0.1); color: var(--primary);">
+                <span class="material-icons">code</span>
+            </div>
+            <h3>Programming & Dev</h3>
+            <p>Master Python, Web Development, and core CS concepts for tech interviews.</p>
+            <div class="arrow-icon"><span class="material-icons">arrow_forward</span></div>
+        </a>
+
+
+        <a href="{{ url_for('main.set_goal', category='GATE') }}" class="goal-card glass-card">
+            <div class="icon-box" style="background: rgba(236, 72, 153, 0.1); color: var(--accent-pink);">
+                <span class="material-icons">school</span>
+            </div>
+            <h3>GATE CSE</h3>
+            <p>Comprehensive syllabus coverage for GATE Computer Science exam.</p>
+            <div class="arrow-icon"><span class="material-icons">arrow_forward</span></div>
+        </a>
+
+
+
+
+        <a href="{{ url_for('main.set_goal', category='Government Exams') }}" class="goal-card glass-card">
+            <div class="icon-box" style="background: rgba(245, 158, 11, 0.1); color: var(--accent-orange);">
+                <span class="material-icons">account_balance</span>
+            </div>
+            <h3>Government Exams</h3>
+            <p>Prepare for UPSC, SSC, and Banking exams with structured lessons.</p>
+            <div class="arrow-icon"><span class="material-icons">arrow_forward</span></div>
+        </a>
+
+
+        <a href="{{ url_for('main.set_goal', category='Data Science') }}" class="goal-card glass-card">
+            <div class="icon-box" style="background: rgba(20, 184, 166, 0.1); color: var(--accent-teal);">
+                <span class="material-icons">smart_toy</span>
+            </div>
+            <h3>AI & Data Science</h3>
+            <p>Master Machine Learning, Deep Learning, Data Analytics, and AI Engineering.</p>
+            <div class="arrow-icon"><span class="material-icons">arrow_forward</span></div>
+        </a>
+
+
+        <a href="{{ url_for('main.set_goal', category='Higher Studies') }}" class="goal-card glass-card">
+            <div class="icon-box" style="background: rgba(139, 92, 246, 0.1); color: #8b5cf6;">
+                <span class="material-icons">auto_stories</span>
+            </div>
+            <h3>Higher Studies</h3>
+            <p>Prepare for exams like GRE, TOEFL, IELTS, and master Research Methodologies.</p>
+            <div class="arrow-icon"><span class="material-icons">arrow_forward</span></div>
+        </a>
+
+
+        <a href="{{ url_for('main.set_goal', category='Startup') }}" class="goal-card glass-card">
+            <div class="icon-box" style="background: rgba(236, 72, 153, 0.1); color: var(--accent-pink);">
+                <span class="material-icons">rocket_launch</span>
+            </div>
+            <h3>Startup & Entrepreneurship</h3>
+            <p>Learn Business Fundamentals, Product Management, Marketing, and Fundraising.</p>
+            <div class="arrow-icon"><span class="material-icons">arrow_forward</span></div>
+        </a>
+
+        <!-- Custom AI Roadmap Entry -->
+        <div class="goal-card glass-card shadow-2xl"
+            style="grid-column: 1 / -1; margin-top: 24px; padding: 40px; border: 2px solid #000000; background: #ffffff !important;">
+            <div style="display: flex; flex-direction: column; gap: 32px; align-items: flex-start; width: 100%;">
+                <div style="flex: 1;">
+                    <div class="icon-box" style="background: #000000; color: #ffffff;">
+                        <span class="material-icons" style="color: #ffffff !important;">auto_awesome</span>
+                    </div>
+                    <h2 style="font-size: 2rem; font-weight: 900; color: #000000; margin-bottom: 12px;">Build Your Own
+                        AI Course</h2>
+                    <p style="font-size: 1.1rem; color: #000000; opacity: 0.8; margin-bottom: 0;">
+                        Type exactly what you want to learn, and our AI will architect a custom roadmap, syllabus, and
+                        modules just for you.
+                    </p>
+                </div>
+                <div style="flex: 1; width: 100%;">
+                    <form action="{{ url_for('main.generate_custom_roadmap') }}" method="POST" style="width: 100%;">
+                        <div style="position: relative; margin-bottom: 20px;">
+                            <input type="text" name="user_goal" required
+                                placeholder="e.g., Python for Finance Masterclass"
+                                class="w-full p-6 text-lg border-2 border-black rounded-2xl focus:outline-none focus:ring-4 focus:ring-black focus:ring-opacity-10 transition-all font-bold"
+                                style="width: 100%; border-radius: 16px; border: 2px solid #000000; padding: 20px;">
+                        </div>
+                        <button type="submit"
+                            class="btn btn-primary w-full py-5 text-xl font-black shadow-xl hover:shadow-2xl transition-all flex items-center justify-center gap-3"
+                            style="background: #000000; color: #ffffff; border-radius: 16px; width: 100%;">
+                            Deploy Custom Roadmap <span class="material-icons">bolt</span>
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<style>
+    .goal-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        gap: 24px;
+        width: 100%;
+        max-width: 1200px;
+    }
+
+    /* Force White Theme + Everything Black */
+    body {
+        background: radial-gradient(circle at top right, #f3f4f6 0%, #ffffff 100%) !important;
+        color: #000000 !important;
+    }
+
+    h1,
+    h2,
+    h3,
+    p,
+    span,
+    .text-muted,
+    .material-icons {
+        color: #000000 !important;
+    }
+
+    .goal-card {
+        padding: 32px;
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        text-decoration: none;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        position: relative;
+        overflow: hidden;
+
+        /* White Glassmorphism Engine */
+        background: rgba(255, 255, 255, 0.85) !important;
+        backdrop-filter: blur(24px) !important;
+        -webkit-backdrop-filter: blur(24px) !important;
+        border: 1px solid rgba(0, 0, 0, 0.1) !important;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.03) !important;
+        color: #000000 !important;
+        border-radius: 20px;
+    }
+
+    .goal-card:hover {
+        transform: translateY(-8px);
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.08) !important;
+        border-color: #000000 !important;
+    }
+
+    .icon-box {
+        width: 64px;
+        height: 64px;
+        border-radius: 16px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 24px;
+        /* Force black for icon container */
+        background: rgba(0, 0, 0, 0.05) !important;
+    }
+
+    .icon-box .material-icons {
+        font-size: 32px;
+        color: #000000 !important;
+    }
+
+    .goal-card h3 {
+        font-size: 1.25rem;
+        margin-bottom: 8px;
+        font-weight: 800;
+    }
+
+    .goal-card p {
+        font-size: 0.95rem;
+        line-height: 1.5;
+        font-weight: 500;
+        opacity: 0.8;
+        /* Keeps it strictly black but slightly hierarchical */
+    }
+
+    .arrow-icon {
+        position: absolute;
+        bottom: 24px;
+        right: 24px;
+        opacity: 0;
+        transform: translateX(-10px);
+        transition: all 0.3s;
+    }
+
+    .arrow-icon .material-icons {
+        color: #000000 !important;
+    }
+
+    .goal-card:hover .arrow-icon {
+        opacity: 1;
+        transform: translateX(0);
+    }
+</style>
+{% endblock %}

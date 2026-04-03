@@ -1,0 +1,76 @@
+{% extends "base.html" %}
+{% block title %}{{ subject.name }}{% endblock %}
+
+{% block sidebar %}
+<aside class="sidebar glass-effect" style="background: rgba(255,255,255,0.9); backdrop-filter: blur(20px); border-right: 1px solid rgba(0,0,0,0.05); padding-top: 24px; transition: all 0.3s; z-index: 50; overflow-y: auto;">
+    <div style="padding: 0 24px 20px 24px; border-bottom: 1px solid rgba(0,0,0,0.05); margin-bottom: 20px;">
+        <a href="{{ url_for('main.dashboard') }}" style="display: flex; align-items: center; gap: 8px; color: #4b5563; text-decoration: none; font-weight: 600; font-size: 14px; transition: color 0.2s;">
+            <span class="material-icons" style="font-size: 18px;">arrow_back</span> Back to Dashboard
+        </a>
+    </div>
+    
+    <div style="padding: 0 16px;">
+        <h3 style="font-size: 13px; font-weight: 800; color: #94a3b8; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 12px; padding-left: 8px;">{{ subject.name }} Tutorials</h3>
+        <div style="display: flex; flex-direction: column; gap: 4px;">
+            {% for item in topic_status %}
+                <a href="{{ url_for('main.topic_view', topic_id=item.topic.id) if not item.is_locked else '#' }}" 
+                   title="{{ item.topic.title }}{% if item.is_locked %} (Locked){% endif %}"
+                   style="display: flex; align-items: center; gap: 12px; padding: 10px 12px; border-radius: 8px; text-decoration: none; color: #1e293b; font-size: 14px; font-weight: 500; transition: all 0.2s; border: 1px solid transparent; {% if item.is_locked %}cursor: not-allowed;{% endif %}">
+                
+                {% if item.is_completed %}
+                <span class="material-icons" style="color: #10b981; font-size: 18px;">check_circle</span>
+                {% elif item.is_locked %}
+                <span class="material-icons" style="color: #cbd5e1; font-size: 18px;">lock</span>
+                {% else %}
+                <span class="material-icons" style="color: #6366f1; font-size: 18px;">play_circle</span>
+                {% endif %}
+                
+                <span style="opacity: {% if item.is_locked %}0.5{% else %}1{% endif %};">{{ item.topic.title }}</span>
+            </a>
+            
+            {% if loop.index % 5 == 0 %}
+                {% set cp_level = loop.index // 5 %}
+                {% set is_cp_locked = not item.is_completed %}
+                {% set is_cp_completed = cp_level in completed_mocks %}
+                
+                <a href="{{ url_for('main.mock_test', subject_id=subject.id, level=cp_level) if not is_cp_locked else '#' }}" 
+                   title="Checkpoint Exam"
+                   style="display: flex; align-items: center; gap: 12px; padding: 12px 14px; border-radius: 10px; text-decoration: none; color: #1e293b; font-size: 14px; font-weight: 700; transition: all 0.2s; border: 2px solid {% if is_cp_completed %}#10b981{% else %}#e2e8f0{% endif %}; background: {% if is_cp_completed %}rgba(16,185,129,0.05){% else %}#f8fafc{% endif %}; margin-top: 8px; margin-bottom: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.02); {% if is_cp_locked %}opacity: 0.6; cursor: not-allowed;{% endif %}">
+                    <span class="material-icons" style="color: {% if is_cp_completed %}#10b981{% else %}#f59e0b{% endif %}; font-size: 22px;">military_tech</span>
+                    <span>Checkpoint {{ cp_level }} Exam</span>
+                    {% if is_cp_locked %}
+                    <span class="material-icons" style="margin-left:auto; font-size:18px; color:#cbd5e1;">lock</span>
+                    {% elif is_cp_completed %}
+                    <span class="material-icons" style="margin-left:auto; font-size:18px; color:#10b981;">check</span>
+                    {% else %}
+                    <span class="material-icons" style="margin-left:auto; font-size:18px; color:#f59e0b;">arrow_forward</span>
+                    {% endif %}
+                </a>
+            {% endif %}
+            {% endfor %}
+        </div>
+    </div>
+</aside>
+{% endblock %}
+
+{% block content %}
+<div class="dashboard-main animate-fade-up" style="padding: 40px; max-width: 900px; margin: 0 auto; min-height: 80vh; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center;">
+    <div style="background: rgba(99,102,241,0.1); width: 80px; height: 80px; border-radius: 20px; display: flex; align-items: center; justify-content: center; margin-bottom: 24px;">
+        <span class="material-icons" style="font-size: 40px; color: #6366f1;">{{ subject.icon or 'school' }}</span>
+    </div>
+    <h1 style="font-size: 42px; font-weight: 800; color: #111827; margin-bottom: 16px;">{{ subject.name }} Course</h1>
+    <p style="font-size: 18px; color: #4b5563; max-width: 600px; line-height: 1.6; margin-bottom: 40px;">
+        {{ subject.description or 'Master the fundamentals and advanced concepts of ' + subject.name + ' through interactive AI-guided lessons.' }}
+    </p>
+    
+    {% if topic_status[0] %}
+    <a href="{{ url_for('main.topic_view', topic_id=topic_status[0].topic.id) }}" 
+       style="background: #6366f1; color: white !important; padding: 16px 40px; border-radius: 99px; font-weight: 700; font-size: 16px; text-decoration: none; display: inline-flex; align-items: center; gap: 8px; box-shadow: 0 10px 25px rgba(99,102,241,0.3); transition: transform 0.2s;">
+        Start Tutorial <span class="material-icons">arrow_forward</span>
+    </a>
+    {% endif %}
+</div>
+<style>
+    .topic-item:hover { background-color: var(--gray-3); }
+</style>
+{% endblock %}

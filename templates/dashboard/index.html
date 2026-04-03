@@ -1,0 +1,566 @@
+{% extends "base.html" %}
+{% block title %}Dashboard | CogniMentor{% endblock %}
+
+{% block content %}
+<style>
+    /* Premium Glassmorphism Overrides specifically for this dashboard */
+    .premium-dash-container {
+        padding: 24px 32px;
+        max-width: 1400px;
+        margin: 0 auto;
+        font-family: 'Inter', sans-serif;
+        color: #111827;
+    }
+
+    /* Top Header Segment */
+    .premium-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 32px;
+    }
+    .search-bar {
+        background: rgba(255, 255, 255, 0.8);
+        backdrop-filter: blur(16px);
+        border: 1px solid rgba(0, 0, 0, 0.05);
+        border-radius: 99px;
+        padding: 10px 20px;
+        display: flex;
+        align-items: center;
+        width: 350px;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.03);
+    }
+    .search-bar input {
+        border: none;
+        background: transparent;
+        outline: none;
+        width: 100%;
+        margin-left: 10px;
+        color: #111827;
+    }
+    
+    .header-actions {
+        display: flex;
+        align-items: center;
+        gap: 20px;
+    }
+
+    .icon-btn {
+        background: rgba(255, 255, 255, 0.8);
+        border: 1px solid rgba(0, 0, 0, 0.05);
+        backdrop-filter: blur(10px);
+        width: 45px;
+        height: 45px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        color: #4b5563;
+        transition: all 0.3s ease;
+        text-decoration: none;
+    }
+    .icon-btn:hover {
+        background: #ffffff;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+        color: #6366f1;
+    }
+
+    .user-profile-btn {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        background: rgba(255, 255, 255, 0.8);
+        padding: 6px 16px 6px 6px;
+        border-radius: 99px;
+        border: 1px solid rgba(0,0,0,0.05);
+        cursor: pointer;
+        text-decoration: none;
+        color: inherit;
+    }
+
+    /* B. Subject Context Switcher (USP) */
+    .context-switcher {
+        display: flex;
+        gap: 16px;
+        margin-bottom: 24px;
+        padding: 4px;
+        overflow-x: auto;
+        scrollbar-width: none; /* Firefox */
+    }
+    .context-switcher::-webkit-scrollbar { display: none; } /* Chrome/Safari */
+
+    .context-item {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 8px;
+        text-decoration: none;
+        transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        cursor: pointer;
+        min-width: 80px;
+    }
+    .context-icon-box {
+        width: 56px;
+        height: 56px;
+        border-radius: 18px;
+        background: rgba(255, 255, 255, 0.8);
+        border: 2px solid rgba(0, 0, 0, 0.03);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #64748b;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.02);
+    }
+    .context-item:hover .context-icon-box {
+        transform: translateY(-4px);
+        background: #ffffff;
+        box-shadow: 0 10px 20px rgba(99, 102, 241, 0.1);
+        color: #6366f1;
+    }
+    .context-item.active .context-icon-box {
+        background: #6366f1;
+        color: #ffffff;
+        border-color: #6366f1;
+        box-shadow: 0 10px 25px rgba(99, 102, 241, 0.4);
+        transform: scale(1.1);
+    }
+    .context-label {
+        font-size: 11px;
+        font-weight: 700;
+        color: #64748b;
+        transition: all 0.3s ease;
+        text-align: center;
+        max-width: 90px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+    .context-item.active .context-label {
+        color: #111827;
+        font-weight: 800;
+    }
+    .active-indicator {
+        width: 6px;
+        height: 6px;
+        background: #6366f1;
+        border-radius: 50%;
+        margin-top: -4px;
+        box-shadow: 0 0 10px #6366f1;
+    }
+
+    /* Glass Cards */
+    .p-glass-card {
+        background: rgba(255, 255, 255, 0.6) !important;
+        backdrop-filter: blur(20px) !important;
+        -webkit-backdrop-filter: blur(20px) !important;
+        border: 1px solid rgba(255, 255, 255, 0.8) !important;
+        border-radius: 20px !important;
+        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.03) !important;
+        padding: 24px;
+        overflow: hidden;
+        position: relative;
+    }
+
+    /* A. Welcome Card */
+    .welcome-card {
+        background: linear-gradient(135deg, rgba(99, 102, 241, 0.05) 0%, rgba(255, 255, 255, 0.8) 100%) !important;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 32px 40px !important;
+        border-left: 4px solid #6366f1 !important;
+        margin-bottom: 24px;
+    }
+    
+    .primary-btn {
+        background: #6366f1;
+        color: white !important;
+        padding: 10px 24px;
+        border-radius: 12px;
+        font-weight: 600;
+        text-decoration: none;
+        display: inline-block;
+        transition: transform 0.2s, box-shadow 0.2s;
+        border: none;
+        font-family: inherit;
+        font-size: 14px;
+    }
+    .primary-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 15px rgba(99, 102, 241, 0.4);
+    }
+
+    /* Grid Layouts */
+    .bento-grid {
+        display: grid;
+        grid-template-columns: 2fr 1fr;
+        gap: 24px;
+        margin-bottom: 24px;
+    }
+    
+    .bottom-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 24px;
+    }
+
+    /* Elements */
+    .section-title {
+        font-size: 18px;
+        font-weight: 700;
+        margin-bottom: 16px;
+        color: #111827;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    /* B. Charts */
+    .chart-wrapper {
+        position: relative;
+        height: 250px;
+        width: 100%;
+    }
+
+    /* C. Cross Skill Cards */
+    .recommendation-list {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+    }
+    .rec-card {
+        background: rgba(255,255,255,0.9);
+        border: 1px solid rgba(99,102,241,0.1);
+        border-radius: 16px;
+        padding: 16px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        transition: all 0.2s ease;
+    }
+    .rec-card:hover {
+        border-color: #6366f1;
+        transform: translateX(4px);
+    }
+
+    /* D. Current Subjects */
+    .subject-list {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+        gap: 16px;
+    }
+    .sub-card {
+        background: #ffffff;
+        border-radius: 16px;
+        padding: 20px;
+        border: 1px solid rgba(0,0,0,0.05);
+        box-shadow: 0 2px 10px rgba(0,0,0,0.02);
+    }
+    .mini-progress-bg {
+        height: 6px;
+        background: #f1f5f9;
+        border-radius: 3px;
+        overflow: hidden;
+        margin: 12px 0;
+    }
+    .mini-progress-fill {
+        height: 100%;
+        background: #6366f1;
+        border-radius: 3px;
+    }
+
+    /* Timeline & Lists */
+    .task-item {
+        display: flex;
+        align-items: flex-start;
+        gap: 16px;
+        padding: 12px 0;
+        border-bottom: 1px solid rgba(0,0,0,0.05);
+    }
+    .task-item:last-child {
+        border-bottom: none;
+    }
+    .task-date {
+        font-size: 12px;
+        color: #64748b;
+        min-width: 60px;
+        font-weight: 600;
+        padding-top: 4px;
+    }
+</style>
+
+<div class="premium-dash-container animate-fade-in">
+
+    <!-- 0. Subject Context Switcher (The AI Context Hub) -->
+    <div class="context-switcher">
+        {% for sub in subjects %}
+        <a href="{{ url_for('main.dashboard', subject_id=sub.id) }}" 
+           class="context-item {% if current_user.current_subject_id == sub.id %}active{% endif %}"
+           title="Switch Context to {{ sub.name }}">
+            <div class="context-icon-box">
+                <span class="material-icons">{{ sub.icon }}</span>
+            </div>
+            <span class="context-label">{{ sub.name }}</span>
+            {% if current_user.current_subject_id == sub.id %}
+            <div class="active-indicator"></div>
+            {% endif %}
+        </a>
+        {% endfor %}
+        
+        <!-- Global Goal Selection Shortcut -->
+        <a href="{{ url_for('main.goal_selection') }}" class="context-item">
+            <div class="context-icon-box" style="background: rgba(0,0,0,0.03); border: 2px dashed rgba(0,0,0,0.1);">
+                <span class="material-icons">add_circle_outline</span>
+            </div>
+            <span class="context-label">Add New</span>
+        </a>
+    </div>
+
+    <!-- 2. TOP HEADER -->
+    <header class="premium-header">
+        <div class="search-bar">
+            <span class="material-icons" style="color: #9ca3af;">search</span>
+            <input type="text" placeholder="Search subjects, topics...">
+        </div>
+        <div class="header-actions">
+            <!-- Dark/Light Toggle (Visual placeholder for now) -->
+            <button class="icon-btn" title="Toggle Theme" onclick="document.body.classList.toggle('student-dark-theme'); document.body.classList.toggle('user-glass-theme');">
+                <span class="material-icons">dark_mode</span>
+            </button>
+            
+            <a href="{{ url_for('main.notifications') }}" class="icon-btn" style="position: relative;">
+                <span class="material-icons">notifications</span>
+                <span style="position: absolute; top: 0; right: 0; width: 10px; height: 10px; background: #ef4444; border-radius: 50%;"></span>
+            </a>
+
+            <a href="{{ url_for('main.profile') }}" class="user-profile-btn">
+                <img src="{{ url_for('static', filename='uploads/' + current_user.profile_pic) if current_user.profile_pic else 'https://ui-avatars.com/api/?name=' + current_user.name }}" 
+                     alt="Profile" style="width: 32px; height: 32px; border-radius: 50%; object-fit: cover;">
+                <span style="font-size: 14px; font-weight: 600;">{{ current_user.name.split()[0] }}</span>
+                <span class="material-icons" style="font-size: 18px; color: #9ca3af;">expand_more</span>
+            </a>
+        </div>
+    </header>
+
+    <!-- 3A. WELCOME CARD / NEXT ACTION HERO -->
+    <div class="p-glass-card welcome-card">
+        {% if next_action %}
+        <div>
+            <span style="display: inline-block; padding: 4px 12px; background: rgba(99,102,241,0.1); color: #6366f1; border-radius: 99px; font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 16px;">Pick up right where you left off</span>
+            <h1 style="font-size: 32px; font-weight: 800; margin-bottom: 8px; color: #111827; display: flex; align-items: center; gap: 12px;">
+                <span class="material-icons" style="color: #f59e0b; font-size: 36px;">{{ next_action.icon }}</span> {{ next_action.title }}
+            </h1>
+            <p style="color: #4b5563; font-size: 15px; max-width: 550px; margin-bottom: 28px; line-height: 1.6;">
+                {{ next_action.reason }}
+            </p>
+            <div style="display: flex; gap: 24px; align-items: center;">
+                <a href="{{ next_action.url }}" class="primary-btn" style="padding: 12px 32px; font-size: 16px; display: flex; align-items: center; gap: 8px;">
+                    Resume Learning <span class="material-icons" style="font-size: 20px;">arrow_forward</span>
+                </a>
+            </div>
+        </div>
+        {% else %}
+        <div>
+            <h1 style="font-size: 28px; font-weight: 800; margin-bottom: 8px; color: #111827;">Hello, {{ current_user.name }}! 👋</h1>
+            <p style="color: #4b5563; font-size: 15px; max-width: 500px; margin-bottom: 20px; line-height: 1.6;">
+                Ready to conquer your goals today? You've consistently improved your score this week. Keep up the momentum!
+            </p>
+            <div style="display: flex; gap: 24px; align-items: center;">
+                <a href="{{ url_for('main.my_subjects') }}" class="primary-btn" style="display: flex; align-items: center; gap: 8px;">
+                    Explore Courses <span class="material-icons" style="font-size: 18px;">menu_book</span>
+                </a>
+            </div>
+        </div>
+        {% endif %}
+        
+        <div style="display: flex; gap: 32px; align-items: center; justify-content: flex-end; padding-left: 40px;">
+            <div style="text-align: center;">
+                <span style="font-size: 28px; font-weight: 800; color: #111827;">{{ stats.overall_progress }}%</span>
+                <span style="display: block; font-size: 11px; color: #64748b; text-transform: uppercase; letter-spacing: 0.5px; font-weight: 700;">Overall Progress</span>
+            </div>
+            <div style="width: 1px; height: 40px; background: rgba(0,0,0,0.1);"></div>
+            <div style="text-align: center;">
+                <span style="font-size: 28px; font-weight: 800; color: #6366f1;">{{ stats.streak }} Days</span>
+                <span style="display: block; font-size: 11px; color: #64748b; text-transform: uppercase; letter-spacing: 0.5px; font-weight: 700;">Learning Streak</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- MAIN BENTO GRID -->
+    <div class="bento-grid">
+        
+        <!-- 3B. PERFORMANCE ANALYTICS -->
+        <div class="p-glass-card">
+            <h3 class="section-title"><span class="material-icons" style="color: #6366f1;">bar_chart</span> Performance Analytics</h3>
+            <div class="chart-wrapper">
+                <canvas id="performanceChart"></canvas>
+            </div>
+        </div>
+
+        <!-- 3C. AI ADVISOR STRATEGIC INSIGHTS -->
+        <div class="p-glass-card" style="background: rgba(99,102,241,0.03) !important;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                <h3 class="section-title" style="margin-bottom: 0;"><span class="material-icons" style="color: #6366f1;">psychology</span> AI Advisor Insights</h3>
+                <a href="{{ url_for('advisor.start') }}" class="text-xs font-bold text-primary flex items-center gap-1" style="text-decoration: none;">
+                    Explore Utility <span class="material-icons" style="font-size: 14px;">arrow_forward</span>
+                </a>
+            </div>
+            <div class="recommendation-list">
+                {% for rec in recommendations %}
+                <div class="rec-card">
+                    <div style="background: rgba(99,102,241,0.1); color: #6366f1; width: 36px; height: 36px; border-radius: 10px; display: flex; justify-content: center; align-items: center; margin-right: 12px;">
+                        <span class="material-icons" style="font-size: 20px;">{{ rec.icon or 'auto_awesome' }}</span>
+                    </div>
+                    <div style="flex: 1;">
+                        <h4 style="font-size: 14px; font-weight: 700; color: #111827; margin-bottom: 4px;">{{ rec.title }}</h4>
+                        <p style="font-size: 12px; color: #64748b; line-height: 1.4; margin-bottom: 6px;">{{ rec.desc }}</p>
+                        {% if rec.reason %}
+                        <div style="background: rgba(99,102,241,0.05); padding: 5px 10px; border-radius: 8px; font-size: 11px; color: #4f46e5; border: 1px dashed rgba(99,102,241,0.2); font-weight: 600; display: inline-block; line-height: 1.2;">
+                            <span class="material-icons" style="font-size: 13px; vertical-align: middle; margin-right: 4px;">tips_and_updates</span>
+                            {{ rec.reason }}
+                        </div>
+                        {% endif %}
+                    </div>
+                    <a href="{{ rec.link }}" class="icon-btn" style="width: 36px; height: 36px; min-width: 36px; background: #f8fafc; color: #6366f1; border-color: transparent; margin-left: 8px;">
+                        <span class="material-icons" style="font-size: 18px;">arrow_forward</span>
+                    </a>
+                </div>
+                {% else %}
+                <p style="font-size: 13px; color: #64748b; padding: 12px; background: rgba(255,255,255,0.6); border-radius: 12px; border: 1px solid rgba(0,0,0,0.05); text-align: center;">Visit the AI Advisor to discover your career potential!</p>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+
+    <!-- 3D. CURRENT LEARNING / SUBJECTS -->
+    <div class="p-glass-card" style="margin-bottom: 24px;">
+        <h3 class="section-title"><span class="material-icons" style="color: #6366f1;">school</span> Current Learning</h3>
+        <div class="subject-list">
+            {% for sub in subjects %}
+            <div class="sub-card">
+                <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px;">
+                    <div style="background: rgba(99,102,241,0.1); color: #6366f1; width: 40px; height: 40px; border-radius: 12px; display: flex; justify-content: center; align-items: center;">
+                        <span class="material-icons">{{ sub.icon }}</span>
+                    </div>
+                    <span style="font-size: 12px; font-weight: 800; color: #111827;">{{ subject_progress[sub.name] }}%</span>
+                </div>
+                <h4 style="font-size: 15px; font-weight: 700; color: #111827; margin-bottom: 4px;">{{ sub.name }}</h4>
+                <div class="mini-progress-bg">
+                    <div class="mini-progress-fill" style="width: {{ subject_progress[sub.name] }}%;"></div>
+                </div>
+                <a href="{{ url_for('main.subject_view', subject_id=sub.id) }}" class="primary-btn" style="width: 100%; text-align: center; padding: 10px 0; background: #f8fafc; color: #111827; border: 1px solid rgba(0,0,0,0.05); border-radius: 10px; margin-top: 8px;">View Syllabus</a>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <div class="bottom-grid">
+        <!-- 3E. UPCOMING TASKS / QUIZ -->
+        <div class="p-glass-card">
+            <h3 class="section-title"><span class="material-icons" style="color: #6366f1;">event</span> Upcoming Tasks</h3>
+            <div>
+                {% for task in upcoming_tasks %}
+                <div class="task-item">
+                    <div style="width: 40px; height: 40px; border-radius: 12px; background: #f8fafc; display: flex; align-items: center; justify-content: center; color: #6366f1; border: 1px solid rgba(0,0,0,0.05);">
+                        <span class="material-icons" style="font-size: 20px;">lock_clock</span>
+                    </div>
+                    <div style="flex: 1;">
+                        <h4 style="font-size: 14px; font-weight: 700; color: #111827; margin-bottom: 3px;">{{ task.title }}</h4>
+                        <p style="font-size: 12px; color: #64748b; font-weight: 500;">{{ task.subject.name }} Module</p>
+                    </div>
+                    <a href="{{ url_for('main.topic_view', topic_id=task.id) }}" class="primary-btn" style="padding: 8px 16px; font-size: 12px; background: transparent; color: #6366f1 !important; border: 2px solid #6366f1; border-radius: 10px;">Review</a>
+                </div>
+                {% else %}
+                <p style="font-size: 13px; color: #64748b; padding: 16px; background: rgba(255,255,255,0.6); border-radius: 12px; border: 1px dashed rgba(0,0,0,0.1); text-align: center;">No locked topics pending. You're all caught up!</p>
+                {% endfor %}
+            </div>
+        </div>
+
+        <!-- 3F. ACTIVITY / RECENT LEARNING -->
+        <div class="p-glass-card">
+            <h3 class="section-title"><span class="material-icons" style="color: #6366f1;">history</span> Recent Learning Activity</h3>
+            <div>
+                {% for attempt in recent_activity %}
+                <div class="task-item" style="align-items: center;">
+                    <div class="task-date">
+                        {{ attempt.timestamp.strftime('%b %d') }}
+                    </div>
+                    <div style="width: 2px; height: 30px; background: #e2e8f0; margin: 0 16px;"></div>
+                    <div style="flex: 1;">
+                        <h4 style="font-size: 14px; font-weight: 700; color: #111827; margin-bottom: 3px;">Quiz: {{ attempt.topic.title if attempt.topic else 'Unknown Module' }}</h4>
+                        <p style="font-size: 12px; color: #64748b; font-weight: 500;">Score: {{ attempt.score }}/{{ attempt.max_score or 1 }}</p>
+                    </div>
+                    {% if attempt.score/(attempt.max_score or 1) >= 0.7 %}
+                    <div style="background: rgba(16,185,129,0.1); padding: 4px; border-radius: 50%; display: flex;">
+                        <span class="material-icons" style="color: #10b981; font-size: 20px;">check_circle</span>
+                    </div>
+                    {% else %}
+                    <div style="background: rgba(239,68,68,0.1); padding: 4px; border-radius: 50%; display: flex;">
+                        <span class="material-icons" style="color: #ef4444; font-size: 20px;">cancel</span>
+                    </div>
+                    {% endif %}
+                </div>
+                {% else %}
+                <p style="font-size: 13px; color: #64748b; padding: 16px; background: rgba(255,255,255,0.6); border-radius: 12px; border: 1px dashed rgba(0,0,0,0.1); text-align: center;">You haven't completed any modules yet. Your history will appear here.</p>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<!-- Scripts for Analytics -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const ctx = document.getElementById('performanceChart');
+    if(ctx) {
+        const labels = JSON.parse('{{ subject_stats.keys() | list | tojson | safe }}');
+        const data = JSON.parse('{{ subject_stats.values() | list | tojson | safe }}');
+        
+        new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: labels.length ? labels : ['Logic', 'Theory', 'Practical'],
+                datasets: [{
+                    label: 'Mastery (%)',
+                    data: data.length ? data : [85, 60, 92],
+                    backgroundColor: 'rgba(99, 102, 241, 0.85)',
+                    hoverBackgroundColor: 'rgba(99, 102, 241, 1)',
+                    borderRadius: 8,
+                    barThickness: 32
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: { 
+                    legend: { display: false },
+                    tooltip: {
+                        backgroundColor: 'rgba(0,0,0,0.8)',
+                        padding: 12,
+                        cornerRadius: 8,
+                        titleFont: { family: 'Inter', size: 14 },
+                        bodyFont: { family: 'Inter', size: 13 }
+                    }
+                },
+                scales: {
+                    y: { 
+                        beginAtZero: true, 
+                        max: 100,
+                        grid: { color: 'rgba(0,0,0,0.04)', drawBorder: false },
+                        ticks: { color: '#64748b', font: { family: 'Inter', size: 11 } }
+                    },
+                    x: {
+                        grid: { display: false, drawBorder: false },
+                        ticks: { color: '#4b5563', font: { family: 'Inter', size: 12, weight: '600' } }
+                    }
+                }
+            }
+        });
+    }
+});
+</script>
+{% endblock %}

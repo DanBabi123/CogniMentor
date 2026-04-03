@@ -1,0 +1,309 @@
+{% extends "base.html" %}
+{% block title %}Smart Assessment: {{ topic.title }} | CogniMentor{% endblock %}
+
+{% block content %}
+<div class="premium-quiz-container animate-fade-in" style="padding: 40px 20px; max-width: 1000px; margin: 0 auto; min-height: 90vh; display: flex; flex-direction: column;">
+    
+    <!-- Header with Timer and Progress -->
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 32px; background: white; padding: 20px 32px; border-radius: 20px; border: 1px solid rgba(0,0,0,0.05); box-shadow: 0 4px 20px rgba(0,0,0,0.03);">
+        <div style="display: flex; align-items: center; gap: 16px;">
+            <div style="background: #6366f1; color: white; width: 48px; height: 48px; border-radius: 14px; display: flex; justify-content: center; align-items: center;">
+                <span class="material-icons">psychology</span>
+            </div>
+            <div>
+                <h1 style="font-size: 20px; font-weight: 800; color: #111827; margin: 0;">{{ topic.title }}</h1>
+                <p style="font-size: 13px; color: #64748b; margin: 0; font-weight: 600;">Adaptive Smart Quiz</p>
+            </div>
+        </div>
+
+        <div style="display: flex; align-items: center; gap: 24px;">
+            <!-- Timer -->
+            <div style="text-align: right;">
+                <div style="font-size: 11px; font-weight: 800; color: #94a3b8; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 2px;">Session Time</div>
+                <div id="countdown-timer" style="font-size: 24px; font-weight: 900; color: #111827; font-variant-numeric: tabular-nums;">05:00</div>
+            </div>
+            <!-- Progress Circle/Bar -->
+            <div style="width: 60px; height: 60px; position: relative;">
+                <svg viewBox="0 0 36 36" style="transform: rotate(-90deg); width: 100%; height: 100%;">
+                    <path d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="#f1f5f9" stroke-width="3" />
+                    <path id="progress-circle" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="#6366f1" stroke-width="3" stroke-dasharray="0, 100" />
+                </svg>
+                <div id="progress-text" style="position: absolute; inset: 0; display: flex; justify-content: center; align-items: center; font-size: 14px; font-weight: 800; color: #6366f1;">0/{{ questions|length }}</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Question Slides -->
+    <form method="POST" action="{% if is_mock %}{{ url_for('main.mock_test_submit', subject_id=subject.id, level=level) }}{% else %}{{ url_for('main.quiz_submit', topic_id=topic.id) }}{% endif %}" id="quizForm" style="flex: 1; display: flex; flex-direction: column;">
+        <input type="hidden" name="time_taken" id="time_taken_input" value="0">
+        
+        <div id="question-container" style="flex: 1; position: relative; overflow: hidden;">
+            {% for q in questions %}
+            {% set q_idx = loop.index0 %}
+            <div class="question-slide" id="slide-{{ q_idx }}" style="display: {% if q_idx == 0 %}block{% else %}none{% endif %}; animation: slideIn 0.4s ease-out;">
+                <div class="p-glass-card" style="padding: 40px; margin-bottom: 24px; border-radius: 32px !important;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 32px;">
+                        <span style="background: rgba(99, 102, 241, 0.1); color: #6366f1; padding: 6px 16px; border-radius: 99px; font-size: 12px; font-weight: 800; text-transform: uppercase;">Question {{ loop.index }} of {{ (questions|length)|default(1) }}</span>
+                        <span style="font-size: 12px; font-weight: 800; color: {% if q.difficulty == 'Easy' %}#10b981{% elif q.difficulty == 'Hard' %}#ef4444{% else %}#f59e0b{% endif %}; text-transform: uppercase; letter-spacing: 1px;">{{ q.difficulty|default('Medium') }}</span>
+                    </div>
+
+                    <h2 style="font-size: 26px; font-weight: 800; color: #111827; margin-bottom: 40px; line-height: 1.4;">{{ q.question|default("Reviewing core concepts...") }}</h2>
+
+                    <div style="display: grid; grid-template-columns: 1fr; gap: 16px; margin-bottom: 32px;">
+                        {% for option in q.options %}
+                        <label class="option-label" onclick="selectOption({{ q_idx }}, {{ loop.index0 }}, {{ q.correct|default(0) }})">
+                            <input type="radio" name="q_{{ q.id|default(q_idx) }}" value="{{ loop.index0 }}" style="display: none;" required>
+                            <div class="option-box" id="opt-{{ q_idx }}-{{ loop.index0 }}">
+                                <span class="option-letter">{{ ['A','B','C','D'][loop.index0] }}</span>
+                                <span class="option-text">{{ option }}</span>
+                                <span class="material-icons feedback-icon" style="display: none;">check_circle</span>
+                            </div>
+                        </label>
+                        {% endfor %}
+                    </div>
+
+                    <!-- Explanation Card (Hidden by default) -->
+                    <div class="explanation-card" id="expl-{{ q_idx }}" style="display: none; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 20px; padding: 24px; margin-top: 24px; animation: fadeIn 0.3s ease-out;">
+                        <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 12px; color: #6366f1;">
+                            <span class="material-icons">info</span>
+                            <strong style="font-size: 14px; text-transform: uppercase; letter-spacing: 0.5px;">Neural Explanation</strong>
+                        </div>
+                        <p style="font-size: 15px; color: #4b5563; line-height: 1.6; margin: 0;">{{ q.explanation|default("Double check the core concept for the best results!") }}</p>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+
+        <!-- Navigation Footer -->
+        <div style="display: flex; justify-content: space-between; align-items: center; padding-top: 24px;">
+            <button type="button" id="prev-btn" onclick="prevSlide()" style="visibility: hidden; background: white; border: 1px solid #e2e8f0; color: #64748b; padding: 12px 24px; border-radius: 12px; font-weight: 700; cursor: pointer; display: flex; align-items: center; gap: 8px;">
+                <span class="material-icons">west</span> Previous
+            </button>
+            <button type="button" id="next-btn" onclick="nextSlide()" style="background: #111827; color: white; border: none; padding: 16px 48px; border-radius: 16px; font-weight: 800; cursor: pointer; display: flex; align-items: center; gap: 12px; box-shadow: 0 10px 20px rgba(0,0,0,0.1); transition: all 0.2s;">
+                <span id="btn-text">Check Answer</span> <span class="material-icons">east</span>
+            </button>
+            <button type="submit" id="submit-btn" style="display: none; background: #6366f1; color: white; border: none; padding: 16px 48px; border-radius: 16px; font-weight: 800; cursor: pointer; display: flex; align-items: center; gap: 12px; box-shadow: 0 10px 20px rgba(99, 102, 241, 0.2);">
+                Finish Assessment <span class="material-icons">done_all</span>
+            </button>
+        </div>
+    </form>
+</div>
+
+<script>
+    let currentSlide = 0;
+    const totalSlides = {{ questions|length }};
+    const quizStartTime = Date.now();
+    let timeLeft = 300; // 5 minutes
+    let isAnswered = new Array(totalSlides).fill(false);
+
+    // Timer Logic
+    const timerInterval = setInterval(() => {
+        timeLeft--;
+        const mins = Math.floor(timeLeft / 60);
+        const secs = timeLeft % 60;
+        document.getElementById('countdown-timer').innerText = `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+        
+        if (timeLeft <= 0) {
+            clearInterval(timerInterval);
+            document.getElementById('quizForm').submit();
+        }
+    }, 1000);
+
+    function selectOption(qIdx, oIdx, correctIdx) {
+        if (isAnswered[qIdx]) return;
+        
+        const boxes = document.querySelectorAll(`#slide-${qIdx} .option-box`);
+        boxes.forEach(b => b.classList.remove('selected', 'correct', 'wrong'));
+        
+        const selectedLabel = document.querySelectorAll(`#slide-${qIdx} .option-label`)[oIdx];
+        const selectedBox = selectedLabel.querySelector('.option-box');
+        const radio = selectedLabel.querySelector('input');
+        
+        radio.checked = true;
+        selectedBox.classList.add('selected');
+        
+        // Change button to "Check Answer" mode if not already
+        document.getElementById('btn-text').innerText = "Check Answer";
+    }
+
+    function checkAnswer() {
+        if (isAnswered[currentSlide]) return true;
+
+        const selectedRadio = document.querySelector(`#slide-${currentSlide} input:checked`);
+        if (!selectedRadio) {
+            alert("Please select an option first!");
+            return false;
+        }
+
+        const qIdx = currentSlide;
+        const oIdx = parseInt(selectedRadio.value);
+        // Find correct index for THIS slide from data-attribute or similar
+        const correctIndices = [
+            {% for q in questions %} {{ q.correct|default(0) }}, {% endfor %}
+        ];
+        const correctOptionIdx = correctIndices[qIdx]; 
+
+        const selectedBox = document.getElementById(`opt-${qIdx}-${oIdx}`);
+        const correctBox = document.getElementById(`opt-${qIdx}-${correctOptionIdx}`);
+
+        if (oIdx === correctOptionIdx) {
+            selectedBox.classList.add('correct');
+        } else {
+            selectedBox.classList.add('wrong');
+            correctBox.classList.add('correct');
+        }
+
+        // Show Feedback Icons
+        document.querySelectorAll(`#slide-${qIdx} .feedback-icon`).forEach((icon, idx) => {
+            if (idx === correctOptionIdx) {
+                icon.innerText = "check_circle";
+                icon.style.display = "block";
+                icon.style.color = "#10b981";
+            } else if (idx === oIdx && oIdx !== correctOptionIdx) {
+                icon.innerText = "cancel";
+                icon.style.display = "block";
+                icon.style.color = "#ef4444";
+            }
+        });
+
+        // Show Explanation
+        document.getElementById(`expl-${qIdx}`).style.display = "block";
+        
+        isAnswered[qIdx] = true;
+        updateProgress();
+        
+        document.getElementById('btn-text').innerText = (currentSlide === totalSlides - 1) ? "View Results" : "Next Question";
+        return true;
+    }
+
+    function nextSlide() {
+        if (document.getElementById('btn-text').innerText === "Check Answer") {
+            checkAnswer();
+            return;
+        }
+
+        if (currentSlide < totalSlides - 1) {
+            document.getElementById(`slide-${currentSlide}`).style.display = "none";
+            currentSlide++;
+            document.getElementById(`slide-${currentSlide}`).style.display = "block";
+            updateUI();
+        } else {
+            document.getElementById('quizForm').submit();
+        }
+    }
+
+    function prevSlide() {
+        if (currentSlide > 0) {
+            document.getElementById(`slide-${currentSlide}`).style.display = "none";
+            currentSlide--;
+            document.getElementById(`slide-${currentSlide}`).style.display = "block";
+            updateUI();
+        }
+    }
+
+    function updateUI() {
+        document.getElementById('prev-btn').style.visibility = (currentSlide === 0) ? 'hidden' : 'visible';
+        
+        if (isAnswered[currentSlide]) {
+            document.getElementById('btn-text').innerText = (currentSlide === totalSlides - 1) ? "View Results" : "Next Question";
+        } else {
+            document.getElementById('btn-text').innerText = "Check Answer";
+        }
+
+        // Progress Text
+        document.getElementById('progress-text').innerText = `${currentSlide + 1}/${totalSlides}`;
+        
+        // Progress Circle
+        const percent = ((currentSlide + 1) / totalSlides) * 100;
+        document.getElementById('progress-circle').setAttribute('stroke-dasharray', `${percent}, 100`);
+    }
+
+    function updateProgress() {
+        // No-op for now as we use updateUI
+    }
+
+    document.getElementById('quizForm').onsubmit = function() {
+        const durationSeconds = Math.round((Date.now() - quizStartTime) / 1000);
+        document.getElementById('time_taken_input').value = Math.min(durationSeconds, 300);
+    };
+
+    // Initialize
+    updateUI();
+</script>
+
+<style>
+    .p-glass-card {
+        background: rgba(255, 255, 255, 1) !important;
+        border: 1px solid rgba(0,0,0,0.08) !important;
+        box-shadow: 0 10px 40px rgba(0,0,0,0.04) !important;
+    }
+    .option-label {
+        cursor: pointer;
+    }
+    .option-box {
+        display: flex;
+        align-items: center;
+        gap: 20px;
+        padding: 20px 24px;
+        border: 2px solid #f1f5f9;
+        border-radius: 20px;
+        background: white;
+        transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        position: relative;
+    }
+    .option-box:hover {
+        border-color: #6366f1;
+        background: #f5f3ff;
+    }
+    .option-box.selected {
+        border-color: #6366f1;
+        background: #f5f3ff;
+        box-shadow: 0 4px 12px rgba(99, 102, 241, 0.1);
+    }
+    .option-box.correct {
+        border-color: #10b981;
+        background: #f0fdf4;
+    }
+    .option-box.wrong {
+        border-color: #ef4444;
+        background: #fef2f2;
+    }
+    .option-letter {
+        width: 40px;
+        height: 40px;
+        background: #f1f5f9;
+        color: #475569;
+        border-radius: 10px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        font-weight: 800;
+        font-size: 14px;
+        transition: inherit;
+    }
+    .selected .option-letter { background: #6366f1; color: white; }
+    .correct .option-letter { background: #10b981; color: white; }
+    .wrong .option-letter { background: #ef4444; color: white; }
+    
+    .option-text {
+        font-size: 16px;
+        font-weight: 600;
+        color: #1e293b;
+        flex: 1;
+    }
+    .feedback-icon {
+        font-size: 24px;
+    }
+
+    @keyframes slideIn {
+        from { opacity: 0; transform: translateX(20px); }
+        to { opacity: 1; transform: translateX(0); }
+    }
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(10px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+</style>
+{% endblock %}
+```

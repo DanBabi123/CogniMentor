@@ -1,0 +1,96 @@
+{% extends "base.html" %}
+{% block title %}Your Roadmap{% endblock %}
+
+{% block content %}
+<div class="main-content">
+    <div style="max-width: 800px; margin: 0 auto;">
+
+        
+        <!-- Career Impact Section -->
+        {% if career_insight %}
+        <div class="glass-panel p-6 mb-8 border-l-4 border-accent">
+            <header class="mb-6">
+                <div class="flex items-center gap-3 mb-2">
+                    <span class="material-icons text-accent">stars</span>
+                    <h2 class="text-2xl font-bold text-main">Career Impact & Insights</h2>
+                </div>
+                <p class="text-sm text-muted">Why mastering <strong>{{ subject }}</strong> is a game-changer for your career.</p>
+            </header>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+                {% for domain in career_insight.domains %}
+                <div class="bg-surface-lighter rounded-xl p-4 border border-light transition-hover cursor-default">
+                    <div class="flex items-start gap-3">
+                        <div class="bg-accent-light p-2 rounded-lg">
+                            <span class="material-icons text-accent" style="font-size: 20px;">{{ domain.icon }}</span>
+                        </div>
+                        <div>
+                            <h4 class="font-bold text-main mb-1">{{ domain.name }}</h4>
+                            <p class="text-xs text-muted leading-relaxed">{{ domain.content }}</p>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+
+            <div class="bg-gradient-hero rounded-xl p-4 border border-accent-light mb-4">
+                <div class="flex items-center gap-3 mb-2">
+                    <span class="material-icons text-accent">tips_and_updates</span>
+                    <h4 class="font-bold text-main">Motivational Insight</h4>
+                </div>
+                <p class="text-sm text-muted italic">{{ career_insight.motivation }}</p>
+            </div>
+
+            <div class="text-center pt-2">
+                <p class="text-sm font-medium text-accent">{{ career_insight.conclusion }}</p>
+            </div>
+        </div>
+        {% endif %}
+
+        <!-- Roadmap Header -->
+        <div class="glass-panel p-6 mb-8 border-l-4 border-primary">
+            <div class="flex items-center gap-3 mb-4">
+                <span class="material-icons text-primary">auto_awesome</span>
+                <h2 class="text-2xl font-bold text-primary">Your Personalized Roadmap</h2>
+            </div>
+            <div class="text-muted leading-relaxed">
+                {{ roadmap.intro|safe }}
+            </div>
+        </div>
+
+        
+        <div class="timeline-container">
+            {% for week in roadmap.weeks %}
+            <div class="timeline-item active">
+                <div class="timeline-icon">
+                    <span class="material-icons text-primary">event_note</span>
+                </div>
+                <div class="timeline-content">
+                    <h3 class="text-lg font-bold text-main mb-2">{{ week.title }}</h3>
+                    <p class="text-muted mb-4">{{ week.desc }}</p>
+
+                    <ul class="flex flex-col gap-2">
+                        {% for task in week.tasks %}
+                        <li class="flex items-center gap-2 text-sm text-main">
+                            <span class="material-icons text-success" style="font-size: 18px;">check_circle</span>
+                            {{ task }}
+                        </li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+
+        
+        <div class="text-center mt-12 pt-8 border-t border-light">
+            <h3 class="text-xl font-bold mb-2">Ready to start?</h3>
+            <p class="text-muted mb-6">Dive into your first module in the dashboard.</p>
+            <a href="{{ url_for('main.index') }}" class="btn btn-lg btn-primary">
+                <span class="material-icons">dashboard</span> Go to Dashboard
+            </a>
+        </div>
+
+    </div>
+</div>
+{% endblock %}

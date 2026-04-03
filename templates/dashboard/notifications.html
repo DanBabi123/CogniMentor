@@ -1,0 +1,114 @@
+{% extends "dashboard/dashboard_layout.html" %}
+{% block title %}Notifications | CogniMentor{% endblock %}
+
+{% block dashboard_content_internal %}
+<div class="animate-fade-up">
+    <header class="mb-8 flex-between" style="display: flex; justify-content: space-between; align-items: center;">
+        <div>
+            <h1 class="page-title">
+                <span class="material-icons text-primary mr-3">notifications</span>
+                Notifications
+            </h1>
+            <p class="text-gray-500">Stay updated on your learning progress</p>
+        </div>
+        {% if unread %}
+        <form action="{{ url_for('main.mark_all_read') }}" method="POST">
+            <button type="submit" class="btn btn-sm btn-outline">Mark all as read</button>
+        </form>
+        {% endif %}
+    </header>
+
+    <div class="glass-panel p-0 overflow-hidden">
+        {% if not unread and not read %}
+        <div class="text-center py-20">
+            <span class="material-icons text-gray-200" style="font-size: 80px;">notifications_off</span>
+            <h3 class="mt-4 text-gray-500 font-bold">No notifications yet</h3>
+            <p class="text-gray-400">We'll notify you when something important happens.</p>
+        </div>
+        {% else %}
+            <!-- Unread Section -->
+            {% if unread %}
+            <div class="notification-group">
+                <div class="group-label px-6 py-3 bg-gray-50 text-xs font-bold uppercase tracking-wider text-gray-400 border-bottom">New</div>
+                {% for notif in unread %}
+                <div class="notification-item unread p-6 border-bottom hover-bg-gray-50 transition">
+                    <div class="d-flex gap-4">
+                        <div class="notif-icon-wrapper {{ notif.type }}">
+                            <span class="material-icons">
+                                {% if notif.type == 'badge' %}military_tech
+                                {% elif notif.type == 'success' %}check_circle
+                                {% elif notif.type == 'warning' %}warning
+                                {% else %}notifications{% endif %}
+                            </span>
+                        </div>
+                        <div class="flex-1">
+                            <div class="flex-between mb-1" style="display: flex; justify-content: space-between;">
+                                <h4 class="font-bold text-dark">{{ notif.title }}</h4>
+                                <span class="text-xs text-gray-400">{{ notif.created_at.strftime('%b %d, %H:%M') }}</span>
+                            </div>
+                            <p class="text-sm text-gray-600">{{ notif.message }}</p>
+                            {% if notif.link %}
+                            <a href="{{ notif.link }}" class="btn btn-xs btn-link mt-2 p-0">View Details</a>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            {% endif %}
+
+            <!-- Read Section -->
+            {% if read %}
+            <div class="notification-group">
+                <div class="group-label px-6 py-3 bg-gray-50 text-xs font-bold uppercase tracking-wider text-gray-400 border-bottom">Earlier</div>
+                {% for notif in read %}
+                <div class="notification-item p-6 border-bottom opacity-70">
+                    <div class="d-flex gap-4">
+                        <div class="notif-icon-wrapper gray">
+                            <span class="material-icons">
+                                {% if notif.type == 'badge' %}military_tech
+                                {% elif notif.type == 'success' %}check_circle
+                                {% elif notif.type == 'warning' %}warning
+                                {% else %}notifications{% endif %}
+                            </span>
+                        </div>
+                        <div class="flex-1">
+                            <div class="flex-between mb-1" style="display: flex; justify-content: space-between;">
+                                <h4 class="font-bold text-gray-600">{{ notif.title }}</h4>
+                                <span class="text-xs text-gray-400">{{ notif.created_at.strftime('%b %d, %H:%M') }}</span>
+                            </div>
+                            <p class="text-sm text-gray-500">{{ notif.message }}</p>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            {% endif %}
+        {% endif %}
+    </div>
+</div>
+
+<style>
+    .notification-item.unread {
+        background: rgba(var(--primary-rgb), 0.02);
+        border-left: 4px solid var(--primary);
+    }
+    
+    .notif-icon-wrapper {
+        width: 48px;
+        height: 48px;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .notif-icon-wrapper.badge { background: #fffbeb; color: #d97706; }
+    .notif-icon-wrapper.success { background: #f0fdf4; color: #16a34a; }
+    .notif-icon-wrapper.warning { background: #fef2f2; color: #dc2626; }
+    .notif-icon-wrapper.info { background: #eff6ff; color: #2563eb; }
+    .notif-icon-wrapper.gray { background: #f8fafc; color: #94a3b8; }
+
+    .border-bottom { border-bottom: 1px solid #f1f5f9; }
+</style>
+{% endblock %}

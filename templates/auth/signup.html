@@ -1,0 +1,87 @@
+{% extends "base.html" %}
+{% block title %}Sign Up - CogniMentor{% endblock %}
+
+{% block content %}
+<div class="auth-wrapper">
+    <div class="auth-container">
+        <!-- Left Side: Mascot & Message -->
+        <div class="auth-image-side">
+            <h1>EXPLORE.<br>LEARN.<br>GROW.</h1>
+        </div>
+
+        <!-- Right Side: Signup Form -->
+        <div class="auth-form-side">
+            <div class="text-center mb-6">
+                <div class="text-primary font-bold text-xl mb-4 flex-center gap-2">
+                    <span class="material-icons">school</span> CogniMentor
+                </div>
+                <h2 class="text-3xl font-bold mb-2 text-gray-900">CREATE ACCOUNT</h2>
+                <p class="text-muted text-sm">Join thousands of learners today</p>
+            </div>
+
+            <form method="POST" class="flex flex-col gap-4">
+                {{ form.hidden_tag() }}
+
+                <div class="w-full">
+                    <label class="text-xs font-bold text-gray-500 uppercase tracking-wider mb-1 block">Full Name</label>
+                    {{ form.name(class="form-control rounded-lg border-gray-100 bg-gray-50/50 p-3 w-full", placeholder="John Doe") }}
+                    {% if form.name.errors %}
+                        <p class="text-xs text-red-500 mt-1">{{ form.name.errors[0] }}</p>
+                    {% endif %}
+                </div>
+
+                <div class="w-full">
+                    <label class="text-xs font-bold text-gray-500 uppercase tracking-wider mb-1 block">Email</label>
+                    {{ form.email(class="form-control rounded-lg border-gray-100 bg-gray-50/50 p-3 w-full", placeholder="john@example.com") }}
+                    {% if form.email.errors %}
+                        <p class="text-xs text-red-500 mt-1">{{ form.email.errors[0] }}</p>
+                    {% endif %}
+                </div>
+
+                <div class="w-full">
+                    <label class="text-xs font-bold text-gray-500 uppercase tracking-wider mb-1 block">Password</label>
+                    {{ form.password(class="form-control rounded-lg border-gray-100 bg-gray-50/50 p-3 w-full", placeholder="••••••••", id="password-input") }}
+                    <p class="text-[10px] text-gray-400 mt-1">Min 8 chars, 1 uppercase, 1 number, 1 special char</p>
+                    {% if form.password.errors %}
+                        <p class="text-xs text-red-500 mt-1">{{ form.password.errors[0] }}</p>
+                    {% endif %}
+                </div>
+
+                <div class="w-full">
+                    <label class="text-xs font-bold text-gray-500 uppercase tracking-wider mb-1 block">Confirm Password</label>
+                    {{ form.confirm_password(class="form-control rounded-lg border-gray-100 bg-gray-50/50 p-3 w-full", placeholder="••••••••") }}
+                    {% if form.confirm_password.errors %}
+                        <p class="text-xs text-red-500 mt-1">{{ form.confirm_password.errors[0] }}</p>
+                    {% endif %}
+                </div>
+
+                <button type="submit" class="btn btn-black w-full py-4 text-lg rounded-xl shadow-lg mt-2">
+                    Sign Up
+                </button>
+
+            </form>
+
+            <div class="mt-6 text-center text-sm">
+                <span class="text-gray-400">Already have an account?</span>
+                <a href="{{ url_for('auth.login') }}" class="text-gray-900 font-bold hover:underline ml-1">Sign in</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    /* Inline styles to override base layout for auth pages */
+    body {
+        background-color: #f8fafc !important;
+    }
+    .main-content {
+        margin-left: 0 !important;
+        width: 100% !important;
+        padding: 0 !important;
+    }
+    .form-control:focus {
+        border-color: #000 !important;
+        box-shadow: 0 0 0 2px rgba(0,0,0,0.05) !important;
+    }
+</style>
+{% endblock %}

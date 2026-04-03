@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+{% block title %}AI Content Generator | CogniMentor{% endblock %}
+
+{% block content %}
+<div class="main-content">
+
+    <header class="mb-4">
+        <h1 class="page-title flex items-center gap-2">
+            <span class="material-icons text-primary">auto_awesome</span>
+            AI Content Generator
+        </h1>
+        <p class="text-muted">Generate custom learning materials for any topic instantly.</p>
+    </header>
+
+    <div class="glass-panel p-6 mb-4">
+        <form method="POST">
+            <div class="form-group">
+                <label class="form-label">What do you want to learn?</label>
+                <input type="text" name="topic" class="form-control"
+                    placeholder="e.g., Quantum Computing, French History, Advanced Python Decorators..." required
+                    value="{{ topic or '' }}">
+            </div>
+
+            <div class="form-group mt-4">
+                <label class="form-label">Start Level</label>
+                <select name="level" class="form-control" style="max-width: 200px;">
+                    <option value="beginner">Beginner</option>
+                    <option value="intermediate">Intermediate</option>
+                    <option value="advanced">Advanced</option>
+                </select>
+            </div>
+
+            <button type="submit" class="btn btn-primary mt-4">
+                <span class="material-icons">auto_awesome</span> Generate Content
+            </button>
+        </form>
+    </div>
+
+    {% if generated_content %}
+    <div class="glass-panel p-6 animate-fade-up bg-white">
+        <h2 class="section-title text-primary mb-4">Generated Lesson: {{ topic }}</h2>
+
+        <div class="lesson-content">
+            {{ generated_content.topic_content | safe }}
+        </div>
+    </div>
+    {% endif %}
+
+</div>
+{% endblock %}

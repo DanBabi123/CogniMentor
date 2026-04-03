@@ -1,0 +1,217 @@
+{% extends "base.html" %}
+{% block title %}Quiz Result | CogniMentor{% endblock %}
+
+{% block content %}
+<div class="dashboard-main animate-fade-up">
+    <div class="result-card glass-panel p-8 bg-white mx-auto" style="max-width: 800px;">
+        
+        <div class="d-flex justify-between align-start border-b border-light pb-6 mb-8 flex-col-mobile">
+            <div>
+                <h2 class="section-title text-3xl mb-2"
+                    style="color: {% if score_percent >= 70 %}var(--secondary){% elif score_percent >= 40 %}var(--accent){% else %}var(--danger){% endif %};">
+                    Quiz Result: {{ score_percent|int }}%
+                </h2>
+                <p class="text-xl text-muted">You scored <strong class="text-main">{{ attempt.score }} / {{
+                        attempt.max_score }}</strong></p>
+            </div>
+
+            <div class="result-badge mt-4-mobile">
+                {% if is_passed %}
+                <span class="badge badge-green d-flex align-center gap-2 px-4 py-2 text-md">
+                    <span class="material-icons">check_circle</span> PASSED
+                </span>
+                {% else %}
+                <span class="badge badge-red d-flex align-center gap-2 px-4 py-2 text-md"
+                    style="background: #fee2e2; color: #991b1b;">
+                    <span class="material-icons">cancel</span> REVIEW NEEDED
+                </span>
+                {% endif %}
+            </div>
+        </div>
+
+        
+        <div class="stats-grid grid-3 gap-6 mb-8">
+            <div class="card text-center p-4 bg-body">
+                <h5 class="text-xs uppercase tracking-wider text-muted mb-2">Strength</h5>
+                <strong class="text-lg"
+                    style="color: {% if strength_level == 'Strong' %}var(--secondary){% elif strength_level == 'Weak' %}var(--danger){% else %}var(--accent){% endif %}">
+                    {{ strength_level }}
+                </strong>
+            </div>
+            <div class="card text-center p-4 bg-body">
+                <h5 class="text-xs uppercase tracking-wider text-muted mb-2">Status</h5>
+                {% if is_passed %}
+                <span class="text-success font-bold">Unlocked Next</span>
+                {% else %}
+                <span class="text-danger font-bold">Locked</span>
+                {% endif %}
+            </div>
+            <div class="card text-center p-4 bg-body">
+                <h5 class="text-xs uppercase tracking-wider text-muted mb-2">Levels Cleared</h5>
+                <div class="d-flex justify-center gap-1 mt-1">
+                    {% for diff, stats in diff_stats.items() %}
+                    <span
+                        class="diff-tag {% if stats.total > 0 and stats.correct/stats.total >= 0.6 %}cleared{% endif %}">
+                        {{ diff[0] }}
+                    </span>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+
+        <div class="card p-6 mb-8"
+            style="background: linear-gradient(135deg, #eff6ff, #dbeafe); border-left: 5px solid var(--primary);">
+            <h4 class="text-primary font-bold d-flex align-center gap-2 mb-2">
+                <span class="material-icons">psychology</span> AI Mentor Feedback
+            </h4>
+            <p class="text-primary-dark">{{ feedback }}</p>
+        </div>
+
+        
+        {% if report %}
+        <div class="analysis-section">
+            <h3 class="section-title mb-6">Detailed Analysis</h3>
+            {% for item in report %}
+            <div class="card p-6 mb-6">
+                <div class="d-flex gap-4 mb-4">
+                    <span class="font-bold text-muted">Q{{ loop.index }}</span>
+                    <span class="font-bold flex-1">{{ item.question }}</span>
+                    <span class="badge badge-gray text-xs uppercase">{{ item.difficulty }}</span>
+                </div>
+
+                <div class="grid-2 gap-6 mb-4">
+                    <div
+                        class="ans-box {% if item.is_correct %}bg-green-light border-green text-green{% else %}bg-red-light border-red text-red{% endif %} p-4 rounded-md border d-flex justify-between align-center">
+                        <div>
+                            <small class="block opacity-80 mb-1">Your Answer</small>
+                            <strong>{{ item.user_answer }}</strong>
+                        </div>
+                        <i class="material-icons">{% if item.is_correct %}check{% else %}close{% endif %}</i>
+                    </div>
+                    <div
+                        class="ans-box bg-white border border-light p-4 rounded-md d-flex justify-between align-center">
+                        <div>
+                            <small class="block opacity-80 mb-1">Correct Answer</small>
+                            <strong>{{ item.correct_answer }}</strong>
+                        </div>
+                        <i class="material-icons text-success">check</i>
+                    </div>
+                </div>
+
+                {% if item.explanation %}
+                <div class="bg-body p-4 rounded-md text-sm text-muted">
+                    <strong>Why?</strong> {{ item.explanation }}
+                </div>
+                {% endif %}
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+
+        <div class="d-flex justify-end gap-4 mt-8 flex-col-mobile">
+            {% if is_passed %}
+            {% if next_topic %}
+            <a href="{{ url_for('main.topic_view', topic_id=next_topic.id) }}" class="btn btn-primary w-full-mobile" style="background: #6366f1; border-color: #6366f1;">
+                Next Module <i class="material-icons">east</i>
+            </a>
+            {% else %}
+            <a href="{{ url_for('main.dashboard') }}" class="btn btn-primary w-full-mobile">
+                Finish Course <i class="material-icons">emoji_events</i>
+            </a>
+            {% endif %}
+            {% else %}
+                {% if attempt.topic_id %}
+                <a href="{{ url_for('main.topic_view', topic_id=attempt.topic_id) }}" class="btn btn-outline w-full-mobile">
+                    <i class="material-icons">refresh</i> Review Topic
+                </a>
+                {% endif %}
+            {% endif %}
+            
+            {% if attempt.topic_id %}
+            <a href="{{ url_for('main.quiz_view', topic_id=attempt.topic_id) }}"
+                class="btn btn-secondary w-full-mobile">
+                Retry Quiz
+            </a>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<style>
+    .grid-3 {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+    }
+
+    .grid-2 {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+    }
+
+    .bg-green-light {
+        background: #f0fdf4;
+    }
+
+    .border-green {
+        border-color: #bbf7d0;
+    }
+
+    .text-green {
+        color: #166534;
+    }
+
+    .bg-red-light {
+        background: #fef2f2;
+    }
+
+    .border-red {
+        border-color: #fecaca;
+    }
+
+    .text-red {
+        color: #991b1b;
+    }
+
+    .diff-tag {
+        display: inline-block;
+        width: 24px;
+        text-align: center;
+        height: 24px;
+        line-height: 24px;
+        border-radius: 50%;
+        background: var(--border-light);
+        color: var(--text-muted);
+        font-size: 0.75rem;
+    }
+
+    .diff-tag.cleared {
+        background: var(--secondary);
+        color: white;
+        font-weight: bold;
+    }
+
+    @media (max-width: 768px) {
+        .grid-3 {
+            grid-template-columns: 1fr;
+        }
+
+        .grid-2 {
+            grid-template-columns: 1fr;
+        }
+
+        .flex-col-mobile {
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .mt-4-mobile {
+            margin-top: 1rem;
+        }
+
+        .w-full-mobile {
+            width: 100%;
+            justify-content: center;
+        }
+    }
+</style>
+{% endblock %}

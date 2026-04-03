@@ -1,0 +1,167 @@
+{% extends "dashboard/dashboard_layout.html" %}
+{% block title %}Leaderboard | CogniMentor{% endblock %}
+
+{% block dashboard_content_internal %}
+<div class="animate-fade-up">
+    <header class="mb-8">
+        <h1 class="page-title">
+            <span class="material-icons text-primary mr-3">emoji_events</span>
+            Global Leaderboard
+        </h1>
+        <p class="text-gray-500">Compete with top learners across the platform</p>
+    </header>
+
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-12">
+        <!-- User Rank Card -->
+        <div class="glass-panel p-6 border-primary bg-primary-light">
+            <div class="d-flex align-center gap-4">
+                <div class="rank-badge large">#{{ user_rank }}</div>
+                <div>
+                    <h3 class="font-bold text-lg">Your Current Rank</h3>
+                    <p class="text-sm opacity-80">Keep learning to climb higher!</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Top XP Stats -->
+        <div class="glass-panel p-6">
+            <div class="d-flex align-center gap-4">
+                <span class="material-icons text-warning text-3xl">military_tech</span>
+                <div>
+                    <h3 class="font-bold text-lg">{{ current_user.total_xp }} XP</h3>
+                    <p class="text-sm text-gray-500">Total Experience Points</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Learning Time -->
+        <div class="glass-panel p-6">
+            <div class="d-flex align-center gap-4">
+                <span class="material-icons text-success text-3xl">timer</span>
+                <div>
+                    <h3 class="font-bold text-lg">{{ current_user.total_learning_time }}m</h3>
+                    <p class="text-sm text-gray-500">Cumulative Learning Time</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Leaderboard Table -->
+    <div class="glass-panel overflow-hidden">
+        <div class="table-responsive">
+            <table class="table leaderboard-table">
+                <thead>
+                    <tr>
+                        <th class="text-center w-16">Rank</th>
+                        <th>User</th>
+                        <th class="text-right">Level</th>
+                        <th class="text-right">Experience</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for user in top_users %}
+                    <tr class="{% if user.id == current_user.id %}current-user-row{% endif %}">
+                        <td class="text-center">
+                            {% if loop.index == 1 %}
+                                <span class="material-icons text-warning">workspace_premium</span>
+                            {% elif loop.index == 2 %}
+                                <span class="material-icons text-silver">workspace_premium</span>
+                            {% elif loop.index == 3 %}
+                                <span class="material-icons text-bronze">workspace_premium</span>
+                            {% else %}
+                                <span class="rank-number">{{ loop.index }}</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <div class="d-flex align-center gap-3">
+                                <div class="avatar-sm">
+                                    {% if user.profile_pic %}
+                                        <img src="{{ url_for('static', filename='uploads/' + user.profile_pic) }}" alt="">
+                                    {% else %}
+                                        <span>{{ user.name[0] | upper }}</span>
+                                    {% endif %}
+                                </div>
+                                <div>
+                                    <div class="font-bold">{{ user.name }}</div>
+                                    <div class="text-xs text-gray-500">{{ user.selected_goal or 'Active Learner' }}</div>
+                                </div>
+                            </div>
+                        </td>
+                        <td class="text-right font-mono">Lvl {{ (user.total_xp // 500) + 1 }}</td>
+                        <td class="text-right">
+                            <span class="xp-pill">{{ user.total_xp }} XP</span>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<style>
+    .leaderboard-table th {
+        padding: 1.5rem 1rem;
+        background: rgba(0,0,0,0.02);
+        font-weight: 700;
+        text-transform: uppercase;
+        font-size: 0.75rem;
+        letter-spacing: 0.05em;
+    }
+
+    .leaderboard-table td {
+        padding: 1.25rem 1rem;
+        border-bottom: 1px solid rgba(0,0,0,0.05);
+        vertical-align: middle;
+    }
+
+    .current-user-row {
+        background: rgba(var(--primary-rgb), 0.05);
+    }
+
+    .rank-badge.large {
+        width: 60px;
+        height: 60px;
+        background: var(--primary);
+        color: white;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 900;
+        font-size: 1.5rem;
+        box-shadow: 0 8px 16px rgba(var(--primary-rgb), 0.2);
+    }
+
+    .xp-pill {
+        background: #f8fafc;
+        padding: 0.4rem 0.8rem;
+        border-radius: 20px;
+        font-weight: 700;
+        font-size: 0.85rem;
+        border: 1px solid #e2e8f0;
+    }
+
+    .avatar-sm {
+        width: 36px;
+        height: 36px;
+        border-radius: 50%;
+        background: var(--primary);
+        color: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 700;
+        font-size: 0.8rem;
+        overflow: hidden;
+    }
+
+    .rank-number {
+        font-weight: 900;
+        color: #94a3b8;
+    }
+
+    .text-silver { color: #94a3b8; }
+    .text-bronze { color: #b45309; }
+</style>
+{% endblock %}

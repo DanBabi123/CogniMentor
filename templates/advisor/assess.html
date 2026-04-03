@@ -1,0 +1,79 @@
+{% extends "base.html" %}
+{% block title %}Advisor Assessment{% endblock %}
+
+{% block content %}
+<div class="main-content bg-gradient-hero flex-center flex-col min-h-screen">
+    <div class="glass-panel p-6" style="max-width: 800px; margin: 0 auto;">
+
+        <header class="mb-6 text-center">
+            <h2 class="section-title">Customize Your Plan: <span class="text-primary">{{ subject }}</span></h2>
+            <p class="text-muted">Help us tailor the roadmap to your goals.</p>
+        </header>
+
+        <form action="{{ url_for('advisor.generate') }}" method="POST" class="assessment-form">
+
+            
+            <div class="form-section">
+                <label>Experience Level</label>
+                <div class="radio-group justify-center">
+                    <label class="radio-pill-label">
+                        <input type="radio" name="level" value="Beginner" required>
+                        <div class="radio-pill-content">Beginner</div>
+                    </label>
+                    <label class="radio-pill-label">
+                        <input type="radio" name="level" value="Intermediate">
+                        <div class="radio-pill-content">Intermediate</div>
+                    </label>
+                    <label class="radio-pill-label">
+                        <input type="radio" name="level" value="Advanced">
+                        <div class="radio-pill-content">Advanced</div>
+                    </label>
+                </div>
+            </div>
+
+            
+            <div class="form-section">
+                <label>Primary Goal</label>
+                <div class="relative">
+                    <select name="goal" class="form-control" required style="cursor: pointer;">
+                        <option value="" disabled selected>Select a goal...</option>
+                        <option value="College Exams">Ace College Exams</option>
+                        <option value="Job/Placement">Job Placement / Interviews</option>
+                        <option value="Personal Project">Build a Project</option>
+                        <option value="Upskilling">General Upskilling</option>
+                    </select>
+                </div>
+            </div>
+
+            
+            <div class="form-section">
+                <label>Daily Time Commitment</label>
+                <div class="radio-group justify-center">
+                    <label class="radio-pill-label">
+                        <input type="radio" name="time" value="30 mins">
+                        <div class="radio-pill-content">30 mins</div>
+                    </label>
+                    <label class="radio-pill-label">
+                        <input type="radio" name="time" value="1 hour" checked>
+                        <div class="radio-pill-content">1 hour</div>
+                    </label>
+                    <label class="radio-pill-label">
+                        <input type="radio" name="time" value="2 hours">
+                        <div class="radio-pill-content">2 hours</div>
+                    </label>
+                    <label class="radio-pill-label">
+                        <input type="radio" name="time" value="3+ hours">
+                        <div class="radio-pill-content">3+ hours</div>
+                    </label>
+                </div>
+            </div>
+
+            <div class="mt-6 text-center">
+                <button type="submit" class="btn btn-lg btn-primary" onclick="this.innerHTML='Generating Plan...'">
+                    <span class="material-icons">auto_awesome</span> Generate Roadmap
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

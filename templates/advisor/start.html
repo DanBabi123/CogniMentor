@@ -1,0 +1,108 @@
+{% extends "base.html" %}
+{% block title %}AI Advisor | CogniMentor{% endblock %}
+
+{% block content %}
+<div class="main-content bg-gradient-hero flex-center flex-col min-h-screen" style="padding: 40px 20px;">
+    <div class="glass-panel p-8" style="max-width: 900px; margin: 0 auto; border-radius: 24px;">
+        
+        <div class="wizard-header text-center mb-10">
+            <h1 class="text-3xl font-bold mb-3" style="color: #000000 !important;">AI Career Advisor</h1>
+            <p class="text-muted max-w-lg mx-auto" style="color: #000000 !important;">
+                Explore how the subjects in your <strong>{{ current_user.selected_goal or 'Technology' }}</strong> path impact your long-term career.
+            </p>
+        </div>
+
+        <div class="subject-grid">
+            {% for subject_name in subjects %}
+            <a href="{{ url_for('advisor.analyze', subject_name=subject_name) }}" class="subject-card-link">
+                <div class="card-content">
+                    <div class="icon-box">
+                        <span class="material-icons">psychology</span>
+                    </div>
+                    <span class="subject-name">{{ subject_name }}</span>
+                    <span class="view-insight">View Career Insights <span class="material-icons" style="font-size: 14px;">arrow_forward</span></span>
+                </div>
+            </a>
+            {% endfor %}
+        </div>
+        
+        <div class="mt-12 p-6 rounded-2xl bg-primary-light border border-primary-light flex items-center justify-center text-center">
+            <div>
+                <h4 class="font-bold text-main">Personalized Strategic Guidance</h4>
+                <p class="text-sm text-muted">Each insight is tailored to your goal: <strong>{{ current_user.selected_goal or 'General' }}</strong>.</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .subject-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+        gap: 20px;
+    }
+    .subject-card-link {
+        text-decoration: none;
+        color: #000000;
+        display: block;
+    }
+    .card-content {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        padding: 30px 20px;
+        background: rgba(255, 255, 255, 0.9);
+        border: 2px solid #000000;
+        border-radius: 20px;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        text-align: center;
+    }
+    .icon-box {
+        width: 50px;
+        height: 50px;
+        background: #f1f5f9;
+        color: #000000;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 16px;
+        transition: all 0.3s;
+        border: 1px solid #000000;
+    }
+    .subject-name {
+        font-weight: 800;
+        font-size: 16px;
+        color: #000000;
+        margin-bottom: 8px;
+    }
+    .view-insight {
+        font-size: 13px;
+        font-weight: 700;
+        color: #000000;
+        display: flex;
+        align-items: center;
+        gap: 4px;
+        opacity: 0.7;
+        transform: translateY(4px);
+        transition: all 0.3s;
+    }
+    .subject-card-link:hover .card-content {
+        transform: translateY(-8px);
+        background: #ffffff;
+        box-shadow: 0 12px 24px rgba(0, 0, 0, 0.1);
+    }
+    .subject-card-link:hover .icon-box {
+        background: #000000;
+        color: #ffffff;
+    }
+    .subject-card-link:hover .view-insight {
+        opacity: 1;
+        transform: translateY(0);
+        text-decoration: underline;
+    }
+    .text-main, .text-muted, h1, p, h4, .wizard-header h1, .subject-name, h1.text-3xl {
+        color: #000000 !important;
+    }
+</style>
+{% endblock %}
