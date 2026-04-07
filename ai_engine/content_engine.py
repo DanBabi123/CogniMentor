@@ -1,10 +1,5 @@
-# import google.generativeai as genai
-# from huggingface_hub import InferenceClient
-# import os
-# import json
-# import random
-# import time
-# import re
+# Content Engine refactored to use REST API (No gRPC)
+import requests
 
 # class AIContentGenerator:
 #     """
