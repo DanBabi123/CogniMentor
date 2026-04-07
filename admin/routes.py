@@ -67,8 +67,7 @@ def manage_subjects():
                 name=name, 
                 description=description, 
                 category=category, 
-                icon=icon or 'school',
-                image_file='default.jpg' # Logic for image upload can be added later
+                icon=icon or 'school'
             )
             db.session.add(new_subject)
             db.session.commit()
