@@ -1,5 +1,13 @@
 {% extends "base.html" %}
-{% block title %}Dashboard | CogniMentor{% endblock %}
+{% block title %}Dashboard | CogniMentor<script>
+    // Premium dynamic styling handler to bypass IDE linting limitations
+    document.addEventListener('DOMContentLoaded', function() {
+        document.querySelectorAll('[data-progress]').forEach(el => {
+            el.style.width = (el.getAttribute('data-progress') || 0) + '%';
+        });
+    });
+</script>
+{% endblock %}
 
 {% block content %}
 <style>
@@ -448,7 +456,7 @@
                 </div>
                 <h4 style="font-size: 15px; font-weight: 700; color: #111827; margin-bottom: 4px;">{{ sub.name }}</h4>
                 <div class="mini-progress-bg">
-                    <div class="mini-progress-fill" style="width: {{ subject_progress[sub.name] }}%;"></div>
+                    <div class="mini-progress-fill" data-progress="{{ subject_progress.get(sub.name, 0) }}"></div>
                 </div>
                 <a href="{{ url_for('main.subject_view', subject_id=sub.id) }}" class="primary-btn" style="width: 100%; text-align: center; padding: 10px 0; background: #f8fafc; color: #111827; border: 1px solid rgba(0,0,0,0.05); border-radius: 10px; margin-top: 8px;">View Syllabus</a>
             </div>
