@@ -6,8 +6,6 @@ email_validator
 Flask-Login==0.6.3
 Flask-WTF==1.2.1
 Flask-Mail
-google-generativeai
+requests
 python-dotenv
 huggingface_hub
-grpcio==1.56.2
-grpcio-status==1.56.2

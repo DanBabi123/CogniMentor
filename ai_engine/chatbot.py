@@ -1,9 +1,43 @@
 import os
 import time
-import google.generativeai as genai
+import requests
 from dotenv import load_dotenv
 
 load_dotenv()
+
+class GeminiREST:
+    """Helper class to call Gemini API via REST instead of gRPC SDK."""
+    def __init__(self, api_key, model_name="gemini-1.5-flash", system_instruction=None):
+        self.api_key = api_key
+        self.model_name = model_name
+        self.system_instruction = system_instruction
+        # Handle model name aliases
+        if self.model_name == "gemini-flash-latest":
+            self.model_name = "gemini-1.5-flash"
+        self.base_url = f"https://generativelanguage.googleapis.com/v1beta/models/{self.model_name}:generateContent?key={self.api_key}"
+
+    def generate_content(self, prompt):
+        payload = {
+            "contents": [{"parts": [{"text": prompt}]}]
+        }
+        if self.system_instruction:
+            payload["system_instruction"] = {"parts": [{"text": self.system_instruction}]}
+        
+        response = requests.post(self.base_url, json=payload, timeout=30)
+        response.raise_for_status()
+        
+        data = response.json()
+        
+        # Mocking the SDK response object structure
+        class MockResponse:
+            def __init__(self, text):
+                self.text = text
+        
+        try:
+            text = data['candidates'][0]['content']['parts'][0]['text']
+            return MockResponse(text)
+        except (KeyError, IndexError):
+            raise Exception("Invalid response from Gemini API")
 
 class ChatbotEngine:
     def __init__(self):
@@ -23,10 +57,8 @@ class ChatbotEngine:
     def _configure_genai(self):
         if not self.api_key: return False
         if not self.client_configured:
-            try:
-                genai.configure(api_key=self.api_key)
-                self.client_configured = True
-            except: return False
+            # REST method doesn't need SDK config
+            self.client_configured = True
         return True
 
     def process_message(self, message, user_context, retries=2):
@@ -50,7 +82,8 @@ class ChatbotEngine:
                 
                 context_summary = "\n".join(perf_context)
                 
-                model = genai.GenerativeModel(
+                model = GeminiREST(
+                    self.api_key,
                     self.model_name,
                     system_instruction=self.persona
                 )

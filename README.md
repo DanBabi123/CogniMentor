@@ -59,3 +59,28 @@ CogniMentor V2 is a production-grade educational platform featuring advanced OTP
 - **Content**: `Topic` Model (JSON Payload) OR `AI Engine` (Fallback Generation) -> View.
 
 ---
+
+## 🛠️ Team Troubleshooting (For Collaborators)
+
+If you are a group member and getting errors when starting the project, follow these steps:
+
+### 1. "ImportError: DLL load failed while importing cygrpc"
+This is caused by Windows Security blocking the Gemini AI library. To fix this:
+- **Option A (Quickest)**: Open your terminal (as Administrator) and run:
+  ```bash
+  pip install --no-cache-dir --upgrade grpcio grpcio-status
+  ```
+- **Option B (Windows Exclusion)**: 
+  - Open **Windows Security** > **Virus & threat protection**.
+  - Click **Manage settings** > scroll down to **Exclusions** > **Add or remove exclusions**.
+  - Click **Add an exclusion** > **Folder** > Select your `ed_project` folder.
+  - Restart your VS Code and try running again.
+
+### 2. "Database file not found" or "Empty Dashboard"
+The database file (`cognimentor.db`) is NOT included on GitHub for security. You must create it on your own machine once:
+1. Ensure your virtual environment is active.
+2. Run: `python run_seed.py`
+3. This will create the database and the default admin account.
+
+### 3. Missing `.env` File
+You need a `.env` file in the root directory for AI features to work. Ask the project lead for the `GEMINI_API_KEY` and other credentials.

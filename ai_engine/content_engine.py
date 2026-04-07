@@ -410,13 +410,47 @@
 
 # ai_engine = AIContentGenerator()
 
-import google.generativeai as genai
+import requests
 from huggingface_hub import InferenceClient
 import os
 import json
 import random
 import time
 import re
+
+class GeminiREST:
+    """Helper class to call Gemini API via REST instead of gRPC SDK."""
+    def __init__(self, api_key, model_name="gemini-1.5-flash", system_instruction=None):
+        self.api_key = api_key
+        self.model_name = model_name
+        self.system_instruction = system_instruction
+        # Handle model name aliases
+        if self.model_name == "gemini-flash-latest":
+            self.model_name = "gemini-1.5-flash"
+        self.base_url = f"https://generativelanguage.googleapis.com/v1beta/models/{self.model_name}:generateContent?key={self.api_key}"
+
+    def generate_content(self, prompt):
+        payload = {
+            "contents": [{"parts": [{"text": prompt}]}]
+        }
+        if self.system_instruction:
+            payload["system_instruction"] = {"parts": [{"text": self.system_instruction}]}
+        
+        response = requests.post(self.base_url, json=payload, timeout=30)
+        response.raise_for_status()
+        
+        data = response.json()
+        
+        # Mocking the SDK response object structure
+        class MockResponse:
+            def __init__(self, text):
+                self.text = text
+        
+        try:
+            text = data['candidates'][0]['content']['parts'][0]['text']
+            return MockResponse(text)
+        except (KeyError, IndexError):
+            raise Exception("Invalid response from Gemini API")
 
 class AIContentGenerator:
     """
@@ -449,17 +483,13 @@ class AIContentGenerator:
                 print(f"HF Client Init Error: {e}")
                 self.last_error = f"HF Error: {e}"
 
-        # Configure GenAI
+        # Configure GenAI (REST)
         genai_key = os.getenv('GEMINI_API_KEY')
         if not genai_key:
             self.last_error = "Missing GEMINI_API_KEY"
         if genai_key and not self.gemini_configured:
-            try:
-                genai.configure(api_key=genai_key) #type: ignore
-                self.gemini_configured = True
-            except Exception as e:
-                print(f"GenAI Config Error: {e}")
-                self.last_error = f"GenAI Config Error: {e}"
+            # REST doesn't need SDK configuration
+            self.gemini_configured = True
         
         return self.hf_client and self.gemini_configured
 
@@ -488,7 +518,9 @@ class AIContentGenerator:
             
             user_prompt = prompts.get(mode, f"Explain {topic_title}")
             
-            model = genai.GenerativeModel( #type: ignore
+            genai_key = os.getenv('GEMINI_API_KEY')
+            model = GeminiREST(
+                genai_key,
                 self.model_content,
                 system_instruction="You are an expert technical educator. Output only clean HTML."
             )
@@ -557,7 +589,7 @@ class AIContentGenerator:
                 - Difficulty mix: Follow logical progression (Easy -> Hard).
                 """
                 
-                model = genai.GenerativeModel(self.model_content) #type: ignore
+                model = GeminiREST(os.getenv('GEMINI_API_KEY'), self.model_content)
                 
                 # Legacy robust generation prepending system context
                 full_prompt = "Output valid JSON array of 5 questions.\n" + prompt
@@ -727,7 +759,9 @@ class AIContentGenerator:
 
                 user_msg = f"Generate lesson for: {subject} - {topic} (Level: {user_level}, Score: {previous_score})"
                 
-                model = genai.GenerativeModel(
+                genai_key = os.getenv('GEMINI_API_KEY')
+                model = GeminiREST(
+                    genai_key,
                     self.model_content,
                     system_instruction=full_system_prompt
                 )
@@ -817,7 +851,8 @@ class AIContentGenerator:
             IMPORTANT: Return ONLY the raw JSON array. Do not include markdown formatting like ```json.
             """
             
-            model = genai.GenerativeModel(self.model_content) #type: ignore
+            genai_key = os.getenv('GEMINI_API_KEY')
+            model = GeminiREST(genai_key, self.model_content)
             response = model.generate_content(prompt)
             
             text = response.text

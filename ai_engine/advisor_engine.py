@@ -1,7 +1,41 @@
-import google.generativeai as genai
+import requests
 import os
 import json
 import re
+
+class GeminiREST:
+    """Helper class to call Gemini API via REST instead of gRPC SDK."""
+    def __init__(self, api_key, model_name="gemini-1.5-flash", system_instruction=None):
+        self.api_key = api_key
+        self.model_name = model_name
+        self.system_instruction = system_instruction
+        # Handle model name aliases
+        if self.model_name == "gemini-flash-latest":
+            self.model_name = "gemini-1.5-flash"
+        self.base_url = f"https://generativelanguage.googleapis.com/v1beta/models/{self.model_name}:generateContent?key={self.api_key}"
+
+    def generate_content(self, prompt):
+        payload = {
+            "contents": [{"parts": [{"text": prompt}]}]
+        }
+        if self.system_instruction:
+            payload["system_instruction"] = {"parts": [{"text": self.system_instruction}]}
+        
+        response = requests.post(self.base_url, json=payload, timeout=30)
+        response.raise_for_status()
+        
+        data = response.json()
+        
+        # Mocking the SDK response object structure
+        class MockResponse:
+            def __init__(self, text):
+                self.text = text
+        
+        try:
+            text = data['candidates'][0]['content']['parts'][0]['text']
+            return MockResponse(text)
+        except (KeyError, IndexError):
+            raise Exception("Invalid response from Gemini API")
 
 class AdvisorEngine:
     def __init__(self):
@@ -12,12 +46,8 @@ class AdvisorEngine:
         if not api_key:
             return False
         if not self.client_configured:
-            try:
-                genai.configure(api_key=api_key)
-                self.client_configured = True
-            except Exception as e:
-                print(f"GenAI Config Error: {e}")
-                return False
+            # REST method doesn't need SDK config
+            self.client_configured = True
         return True
 
     def get_career_insight(self, subject, selected_goal=None):
@@ -80,7 +110,7 @@ class AdvisorEngine:
             IMPORTANT: Return ONLY valid JSON.
             """
             
-            model = genai.GenerativeModel('gemini-1.5-flash')
+            model = GeminiREST(os.getenv('GEMINI_API_KEY'), 'gemini-1.5-flash')
             response = model.generate_content(prompt)
             
             return self._extract_json(response.text)
