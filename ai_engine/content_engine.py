@@ -1,23 +1,23 @@
-# Content Engine refactored to use REST API (No gRPC)
+# Content Engine refactored to use REST API
 import requests
 
 # class AIContentGenerator:
 #     """
 #     Generative AI Engine for CogniMentor using Official SDKs:
-#     - Content: Gemini 1.5 Flash (google-generativeai)
+#     - Content: Gemini 1.5 Flash
 #     - Quiz: Flan-T5 Base (huggingface_hub)
 #     - Lesson: Zephyr 3B (huggingface_hub)
 #     """
 #     def __init__(self):
 #         self.hf_client = None
-#         self.genai_client = None
+#         self.ai_client = None
         
 #         # Models
 #         self.model_content = "gemini-flash-latest"
 #         self.model_quiz = "google/flan-t5-base"
 #         self.model_lesson = "stabilityai/stablelm-zephyr-3b"
         
-#         self.gemini_configured = False
+#         self.ai_configured = False
 
 #     def _configure_clients(self):
 #         """Configures both Google and HF clients"""
@@ -414,7 +414,7 @@ import time
 import re
 
 class GeminiREST:
-    """Helper class to call Gemini API via REST instead of gRPC SDK."""
+    """Helper class to call Gemini API via REST."""
     def __init__(self, api_key, model_name="gemini-1.5-flash", system_instruction=None):
         self.api_key = api_key
         self.model_name = model_name
