@@ -93,6 +93,9 @@
                                 </span>
                             </td>
                             <td class="p-4 text-right">
+                                <a href="{{ url_for('admin.edit_subject', subject_id=subject.id) }}" class="btn-icon text-primary hover:bg-blue-50 inline-block mr-2">
+                                    <span class="material-icons">edit</span>
+                                </a>
                                 <form action="{{ url_for('admin.delete_subject', subject_id=subject.id) }}"
                                     method="POST" class="inline-block"
                                     onsubmit="return confirm('Are you sure? This will delete all topics and quizzes for this subject.');">

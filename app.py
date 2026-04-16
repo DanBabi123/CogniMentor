@@ -7,23 +7,23 @@ import os
 
 load_dotenv()
 
-# Create App Factory
+
 
 def create_app(test_config=None):
 
     app = Flask(__name__)
     
-    # Enable proxy fix for correct redirect URI generation behind proxies
+    
     from werkzeug.middleware.proxy_fix import ProxyFix
     app.wsgi_app = ProxyFix(app.wsgi_app, x_proto=1, x_host=1)
     
-    # Configuration
+    
     app.config['SECRET_KEY'] = SECRET_KEY
     app.config['SQLALCHEMY_DATABASE_URI'] = SQLALCHEMY_DATABASE_URI
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = SQLALCHEMY_TRACK_MODIFICATIONS
     app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
     
-    # Mail Configuration
+    
     app.config['MAIL_SERVER'] = 'smtp.gmail.com'
     app.config['MAIL_PORT'] = 587
     app.config['MAIL_USE_TLS'] = True
@@ -33,7 +33,7 @@ def create_app(test_config=None):
     if test_config:
         app.config.update(test_config)
 
-    # Initialize Extensions
+    
     db.init_app(app)
     from extensions import mail
     mail.init_app(app)
@@ -51,7 +51,7 @@ def create_app(test_config=None):
         return db.session.get(User, int(user_id))
 
 
-    # Register Blueprints
+
     from main.routes import main
     from auth.routes import auth
     from advisor.routes import advisor

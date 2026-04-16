@@ -1,3 +1,4 @@
+
 from flask import render_template, redirect, url_for, flash, request, session
 from flask_login import login_user, logout_user, current_user, login_required
 from database.database import db
@@ -179,4 +180,4 @@ def reset_password(token):
         flash('Your password has been updated! You can now login.', 'success')
         return redirect(url_for('auth.login'))
         
-    return render_template('auth/reset_password.html', form=form)
+    return render_template('auth/reset_password.html', form=form)

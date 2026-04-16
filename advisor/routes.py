@@ -51,6 +51,7 @@ def start():
 @advisor.route('/analyze/<string:subject_name>')
 @login_required
 def analyze(subject_name):
+    session['advisor_subject'] = subject_name
     return render_template('advisor/assess.html', subject=subject_name)
 
 @advisor.route('/generate', methods=['POST'])
@@ -70,4 +71,7 @@ def generate():
     # Generate Roadmap
     roadmap = advisor_engine.generate_roadmap(subject, level, goal, time, current_user.name)#type: ignore
     
-    return render_template('advisor/roadmap.html', roadmap=roadmap, subject=subject)
+    # Generate Career Insight
+    career_insight = advisor_engine.get_career_insight(subject, current_user.selected_goal)
+    
+    return render_template('advisor/roadmap.html', roadmap=roadmap, subject=subject, career_insight=career_insight)

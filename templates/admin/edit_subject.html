@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+{% block title %}Edit Subject - Admin{% endblock %}
+
+{% block content %}
+<div class="main-content bg-gradient-hero flex-col min-h-screen">
+    <header class="mb-8 flex-between">
+        <div>
+            <h1 class="page-title justify-start">Edit Subject</h1>
+            <p class="text-muted">Update curriculum details for {{ subject.name }}.</p>
+        </div>
+        <a href="{{ url_for('admin.manage_subjects') }}" class="btn btn-outline">
+            <span class="material-icons">arrow_back</span> Cancel
+        </a>
+    </header>
+
+    <div class="glass-panel" style="max-width: 600px; margin: 0 auto;">
+        <form method="POST" action="{{ url_for('admin.edit_subject', subject_id=subject.id) }}">
+            <div class="form-group">
+                <label class="form-label">Subject Name</label>
+                <input type="text" name="name" class="form-control" value="{{ subject.name }}" required>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Category</label>
+                <select name="category" class="select" required>
+                    <option value="" disabled>Select Category...</option>
+                    <option value="Tech" {% if subject.category == 'Tech' %}selected{% endif %}>Technology & Code</option>
+                    <option value="Govt" {% if subject.category == 'Govt' %}selected{% endif %}>Government Exams</option>
+                    <option value="GATE" {% if subject.category == 'GATE' %}selected{% endif %}>GATE / Engineering</option>
+                    <option value="Business" {% if subject.category == 'Business' %}selected{% endif %}>Business & Management</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Icon (Material Icon Name)</label>
+                <input type="text" name="icon" class="form-control" value="{{ subject.icon }}" required>
+                <small class="text-muted text-xs mt-1 block">
+                    Choose an icon from <a href="https://fonts.google.com/icons" target="_blank" class="text-primary hover:underline">Material Icons</a>
+                </small>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Description</label>
+                <textarea name="description" class="textarea" rows="3">{{ subject.description or '' }}</textarea>
+            </div>
+
+            <button type="submit" class="btn btn-primary w-full justify-center">
+                <span class="material-icons">save</span> Save Changes
+            </button>
+        </form>
+    </div>
+</div>
+{% endblock %}

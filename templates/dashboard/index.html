@@ -328,13 +328,10 @@
 
     <!-- 2. TOP HEADER -->
     <header class="premium-header">
-        <div class="search-bar">
-            <span class="material-icons" style="color: #9ca3af;">search</span>
-            <input type="text" placeholder="Search subjects, topics...">
-        </div>
+
         <div class="header-actions">
-            <!-- Dark/Light Toggle (Visual placeholder for now) -->
-            <button class="icon-btn" title="Toggle Theme" onclick="document.body.classList.toggle('student-dark-theme'); document.body.classList.toggle('user-glass-theme');">
+            <!-- Dark/Light Toggle -->
+            <button class="icon-btn" title="Toggle Theme" onclick="document.body.classList.toggle('dark-theme'); document.body.classList.toggle('user-glass-theme');">
                 <span class="material-icons">dark_mode</span>
             </button>
             
@@ -523,6 +520,8 @@
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
 document.addEventListener('DOMContentLoaded', function () {
+
+
     const ctx = document.getElementById('performanceChart');
     if(ctx) {
         const labels = JSON.parse('{{ subject_stats.keys() | list | tojson | safe }}');

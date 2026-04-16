@@ -93,5 +93,3 @@ class AuthService:
         db.session.delete(reset_entry)
         db.session.commit()
         return True, "Your password has been updated! You can now login."
-
-        db.session.commit()

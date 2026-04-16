@@ -60,11 +60,7 @@
         </div>
 
         <div class="flex-center gap-lg">
-            <div class="header-search advanced-search">
-                <span class="material-icons" style="color: #94a3b8; font-size: 20px;">search</span>
-                <input type="text" placeholder="Search subjects, topics..."
-                    style="background: transparent; border: none; color: var(--text-main); outline: none; flex: 1;">
-            </div>
+
 
             <div class="header-actions flex-center gap-md">
                 {% if current_user.role != 'admin' %}
@@ -226,20 +222,7 @@
     }
 
     document.addEventListener('DOMContentLoaded', () => {
-        // Search feature
-        const searchInput = document.querySelector('.advanced-search input');
-        if (searchInput) {
-            searchInput.addEventListener('keypress', (e) => {
-                if (e.key === 'Enter') {
-                    e.preventDefault();
-                    const query = searchInput.value.trim();
-                    if (query !== '') {
-                        showAppToast(`Searching database for "${query}"...`, 'search');
-                        setTimeout(() => searchInput.value = '', 1500);
-                    }
-                }
-            });
-        }
+
     });
 </script>
 {% endblock %}

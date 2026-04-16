@@ -71,7 +71,7 @@ def manage_subjects():
             )
             db.session.add(new_subject)
             db.session.commit()
-            flash(f'Subject "{name}" added successfully!', 'success')
+            flash(f'Subject "{name}" added successfully!', 'modal-success')
             return redirect(url_for('admin.manage_subjects'))
             
     subjects = Subject.query.all()
@@ -82,10 +82,47 @@ def manage_subjects():
 @admin_required
 def delete_subject(subject_id):
     subject = Subject.query.get_or_404(subject_id)
+    subject_name = subject.name
+    
+    from models.progress import MockTestProgress, LearningProgress
+    from models.quiz import QuizAttempt, Question
+    
+    # Manually delete child records to avoid SQLite IntegrityError
+    MockTestProgress.query.filter_by(subject_id=subject.id).delete()
+    for topic in subject.topics:
+        LearningProgress.query.filter_by(topic_id=topic.id).delete()
+        QuizAttempt.query.filter_by(topic_id=topic.id).delete()
+        Question.query.filter_by(topic_id=topic.id).delete()
+        db.session.delete(topic)
+        
     db.session.delete(subject)
     db.session.commit()
-    flash(f'Subject "{subject.name}" deleted.', 'success')
+    flash(f'Subject "{subject_name}" deleted.', 'modal-success')
     return redirect(url_for('admin.manage_subjects'))
+
+@admin.route('/subjects/edit/<int:subject_id>', methods=['GET', 'POST'])
+@login_required
+@admin_required
+def edit_subject(subject_id):
+    subject = Subject.query.get_or_404(subject_id)
+    if request.method == 'POST':
+        name = request.form.get('name')
+        description = request.form.get('description')
+        category = request.form.get('category')
+        icon = request.form.get('icon')
+        
+        if not name or not category:
+            flash('Name and Category are required!', 'error')
+        else:
+            subject.name = name
+            subject.description = description
+            subject.category = category
+            subject.icon = icon or 'school'
+            db.session.commit()
+            flash(f'Subject "{name}" updated successfully!', 'modal-success')
+            return redirect(url_for('admin.manage_subjects'))
+            
+    return render_template('admin/edit_subject.html', subject=subject)
 @admin.route('/analytics')
 @login_required
 @admin_required

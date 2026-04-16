@@ -183,7 +183,7 @@ body.dark-theme {
 .auth-image-side {
     flex: 1;
     position: relative;
-    background: #f8fafc url('../images/login-mascot.png') center 80% / 120% no-repeat;
+    background: #f8fafc url('../images/login.jpeg') center 80% / 120% no-repeat;
     display: flex;
     flex-direction: column;
     justify-content: flex-end;

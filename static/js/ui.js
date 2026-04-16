@@ -214,7 +214,7 @@ function showAlert(message, type = 'info') {
     } else if (type === 'success') {
         icon = 'check_circle_outline';
         color = '#10b981';
-        title.innerText = 'Account Verified';
+        title.innerText = 'Success';
     } else if (type === 'info') {
         icon = 'mark_email_read';
         color = '#3b82f6';

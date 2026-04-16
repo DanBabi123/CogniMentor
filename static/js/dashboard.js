@@ -38,12 +38,7 @@ function initSidebar() {
 
 
 function initNotifications() {
-    const notifBtn = document.querySelector('.header-actions .material-icons');
-    if (notifBtn) {
-        notifBtn.parentElement.addEventListener('click', () => {
-            alert('Notifications coming soon!');
-        });
-    }
+    // Alert removed as notifications are natively routed via the HTML anchor tag
 }
 
 
