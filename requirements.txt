@@ -9,3 +9,5 @@ Flask-Mail
 requests
 python-dotenv
 huggingface_hub
+google-generativeai
+gunicorn

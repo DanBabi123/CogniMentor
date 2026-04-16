@@ -53,7 +53,7 @@ cover/
 *.mo
 *.pot
 
-# instance/
+instance/
 .webassets-cache
 
 # Scrapy stuff:
@@ -125,9 +125,10 @@ dmypy.json
 
 # Custom
 *.log
-# *.sqlite3
-# *.db
+*.sqlite3
+*.db
 email_logs/
 static/profile_pics/
+static/uploads/
 # Keep gitignore itself
 !.gitignore
